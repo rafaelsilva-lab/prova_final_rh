@@ -3,591 +3,387 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulado - Relações Humanas</title>
+    <title>Hub de Estudos - Enfermagem</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        /* --- DESIGN ESTRUTURAL --- */
+        :root {
+            --primary: #005b96;
+            --accent: #00796b;
+            --bg: #f4f4f9;
+            --card: #ffffff;
+            --text: #333;
+            --correct: #28a745;
+            --wrong: #dc3545;
         }
 
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f5f5f5;
-            color: #333;
-            line-height: 1.6;
-            padding: 20px;
+        body { font-family: Helvetica, Arial, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; line-height: 1.5; }
+        .container { max-width: 800px; margin: 0 auto; background: var(--card); padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        
+        /* Header e Títulos */
+        h1 { color: var(--primary); margin: 0; }
+        .subtitle { text-align: center; color: #666; font-size: 0.9em; margin-bottom: 30px; margin-top: 10px; }
+        
+        /* Estilo da Setinha de Voltar */
+        .header-nav { display: flex; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 15px; }
+        .back-arrow {
+            background: none; border: none; font-size: 2em; color: var(--primary);
+            cursor: pointer; padding-right: 15px; transition: transform 0.2s;
+            line-height: 1;
         }
+        .back-arrow:hover { transform: translateX(-3px); color: var(--accent); }
 
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        /* Menu Styles */
+        .menu-title { text-align: center; margin-top: 10px; }
+        .menu-grid { display: grid; grid-template-columns: 1fr; gap: 15px; }
+        @media (min-width: 600px) { .menu-grid { grid-template-columns: 1fr 1fr; } }
+        
+        .menu-btn {
+            background: white; border: 2px solid var(--primary); color: var(--primary);
+            padding: 20px; font-size: 1.1em; font-weight: bold; border-radius: 8px;
+            cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center;
+            text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
+        .menu-btn:hover { background: var(--primary); color: white; transform: translateY(-2px); }
+        .menu-btn.disabled { border-color: #ccc; color: #ccc; cursor: not-allowed; pointer-events: none; background: #f9f9f9; }
 
-        h1 {
-            text-align: center;
-            color: #2c3e50;
-            margin-bottom: 10px;
-            font-size: 24px;
-        }
+        /* Quiz Styles */
+        .screen { display: none; } /* Esconde as telas não ativas */
+        .active { display: block; } /* Mostra a tela ativa */
 
-        .subtitle {
-            text-align: center;
-            color: #7f8c8d;
-            margin-bottom: 30px;
-            font-size: 14px;
+        .question-block { margin-bottom: 30px; border-bottom: 1px solid #eee; padding-bottom: 20px; }
+        .question-title { font-weight: bold; margin-bottom: 15px; font-size: 1.1em; color: #000; }
+        .badge { background: var(--accent); color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.8em; margin-right: 5px; vertical-align: middle; }
+        
+        .option-btn {
+            display: block; width: 100%; padding: 12px; text-align: left; margin-bottom: 10px;
+            background: #fff; border: 2px solid #ddd; border-radius: 6px; cursor: pointer; color: #444;
+            transition: background 0.2s;
         }
+        .option-btn:hover { background: #f0f0f0; }
+        .option-btn.selected { background: #e3f2fd; border-color: var(--primary); color: #000; font-weight: 500; }
 
-        .question {
-            margin-bottom: 30px;
-            padding: 15px;
-            background: #fafafa;
-            border-left: 4px solid #3498db;
-            border-radius: 4px;
+        .action-btn {
+            width: 100%; padding: 15px; background: var(--primary); color: white; border: none;
+            border-radius: 6px; font-size: 1.2em; cursor: pointer; margin-top: 20px;
         }
+        .action-btn:hover { opacity: 0.9; }
+        .back-btn { background: #666; margin-top: 10px; }
 
-        .question-header {
-            font-weight: bold;
-            margin-bottom: 12px;
-            color: #2c3e50;
-        }
+        /* Resultados */
+        .result-card { padding: 15px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 6px; background: #fff; }
+        .result-card.correct { border-left: 5px solid var(--correct); }
+        .result-card.wrong { border-left: 5px solid var(--wrong); }
+        .score-board { text-align: center; font-size: 1.5em; padding: 20px; background: #e8eaf6; border-radius: 8px; margin-bottom: 20px; font-weight: bold; color: var(--primary); }
+        .explanation { background: #f9f9f9; padding: 10px; font-size: 0.9em; margin-top: 5px; border-radius: 4px; }
+        .status-correct { color: var(--correct); font-weight: bold; }
+        .status-wrong { color: var(--wrong); font-weight: bold; }
 
-        .question-text {
-            margin-bottom: 15px;
-            font-size: 15px;
-        }
-
-        .option {
-            display: block;
-            padding: 10px;
-            margin: 8px 0;
-            background: white;
-            border: 2px solid #ddd;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .option:hover {
-            border-color: #3498db;
-            background: #ecf0f1;
-        }
-
-        .option.selected {
-            background: #3498db;
-            color: white;
-            border-color: #2980b9;
-        }
-
-        .option input[type="radio"] {
-            margin-right: 8px;
-        }
-
-        .btn {
-            display: block;
-            width: 100%;
-            padding: 15px;
-            background: #27ae60;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 30px;
-            transition: background 0.3s;
-        }
-
-        .btn:hover {
-            background: #229954;
-        }
-
-        .btn:disabled {
-            background: #95a5a6;
-            cursor: not-allowed;
-        }
-
-        #resultado {
-            display: none;
-            margin-top: 30px;
-        }
-
-        .score {
-            text-align: center;
-            font-size: 24px;
-            font-weight: bold;
-            padding: 20px;
-            background: #ecf0f1;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-
-        .score.aprovado {
-            background: #d5f4e6;
-            color: #27ae60;
-        }
-
-        .score.reprovado {
-            background: #fadbd8;
-            color: #e74c3c;
-        }
-
-        .gabarito-item {
-            padding: 15px;
-            margin: 10px 0;
-            border-radius: 4px;
-            border-left: 4px solid;
-        }
-
-        .gabarito-item.correto {
-            background: #d5f4e6;
-            border-color: #27ae60;
-        }
-
-        .gabarito-item.incorreto {
-            background: #fadbd8;
-            border-color: #e74c3c;
-        }
-
-        .gabarito-item strong {
-            display: block;
-            margin-bottom: 5px;
-        }
-
-        .sua-resposta {
-            font-weight: bold;
-        }
-
-        @media (max-width: 600px) {
-            body {
-                padding: 10px;
-            }
-            
-            .container {
-                padding: 15px;
-            }
-            
-            h1 {
-                font-size: 20px;
-            }
-            
-            .question-text {
-                font-size: 14px;
-            }
-        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Simulado Final - Relações Humanas</h1>
-        <p class="subtitle">Curso Técnico de Enfermagem | 30 Questões</p>
 
-        <form id="quizForm">
-            <!-- Questões PNH -->
-            <div class="question">
-                <div class="question-header">Questão 1 - Política Nacional de Humanização</div>
-                <div class="question-text">A Política Nacional de Humanização (PNH) foi criada em 2003 com o objetivo de efetivar os princípios do SUS nas práticas cotidianas de saúde. Entre os princípios fundamentais que a PNH busca resgatar e fortalecer, destacam-se aspectos essenciais para garantir um atendimento de qualidade à população. Qual das alternativas apresenta corretamente os princípios do SUS que a PNH propõe resgatar?</div>
-                <label class="option"><input type="radio" name="q1" value="A"> A) Universalidade, equidade, integralidade, descentralização, hierarquização e participação popular</label>
-                <label class="option"><input type="radio" name="q1" value="B"> B) Privatização, centralização, fragmentação do cuidado e gestão autoritária</label>
-                <label class="option"><input type="radio" name="q1" value="C"> C) Atendimento especializado, exclusividade, tratamento diferenciado e gestão verticalizada</label>
-                <label class="option"><input type="radio" name="q1" value="D"> D) Seletividade, hierarquia rígida, individualismo e gestão por resultados financeiros</label>
-            </div>
+<div class="container screen active" id="menu-screen">
+    <h1 class="menu-title">Hub de Estudos - Enfermagem</h1>
+    <p class="subtitle">Selecione a matéria para iniciar o simulado</p>
+    
+    <div class="menu-grid">
+        <button class="menu-btn" onclick="iniciarQuiz('relacoes')">Relações Humanas</button>
+        <button class="menu-btn" onclick="iniciarQuiz('coletiva')">Saúde Coletiva (Vacinas)</button>
+        <button class="menu-btn" onclick="iniciarQuiz('doencas')">Saúde Coletiva (Doenças)</button>
+        
+        <button class="menu-btn disabled" id="btn-psicologia" onclick="iniciarQuiz('psicologia')">Psicologia (Em breve)</button>
+        <button class="menu-btn disabled" id="btn-ambiental" onclick="iniciarQuiz('ambiental')">Saúde Ambiental (Em breve)</button>
+        <button class="menu-btn disabled" id="btn-organizacional" onclick="iniciarQuiz('organizacional')">Processos Organizacionais (Em breve)</button>
+    </div>
+</div>
 
-            <div class="question">
-                <div class="question-header">Questão 2 - Política Nacional de Humanização</div>
-                <div class="question-text">Um dos princípios norteadores da PNH é a transversalidade, que propõe uma mudança significativa na forma como os serviços de saúde se comunicam e interagem. Considerando o contexto hospitalar onde você atua como técnico de enfermagem, como o princípio da transversalidade pode ser aplicado no dia a dia?</div>
-                <label class="option"><input type="radio" name="q2" value="A"> A) Mantendo cada setor isolado em suas funções específicas sem comunicação entre as equipes</label>
-                <label class="option"><input type="radio" name="q2" value="B"> B) Promovendo o aumento da comunicação intra e intergrupos, facilitando o diálogo entre diferentes setores e profissionais</label>
-                <label class="option"><input type="radio" name="q2" value="C"> C) Estabelecendo uma hierarquia rígida onde apenas os gestores tomam decisões</label>
-                <label class="option"><input type="radio" name="q2" value="D"> D) Limitando a participação dos usuários nas decisões sobre seu próprio cuidado</label>
-            </div>
-
-            <div class="question">
-                <div class="question-header">Questão 3 - Política Nacional de Humanização</div>
-                <div class="question-text">A PNH enfatiza que a humanização não se limita apenas ao atendimento dos pacientes, mas também envolve aspectos relacionados aos profissionais de saúde. Segundo o documento, qual é a importância de investir no trabalhador de saúde dentro da perspectiva da humanização?</div>
-                <label class="option"><input type="radio" name="q3" value="A"> A) Apenas para aumentar a produtividade e reduzir custos operacionais da instituição</label>
-                <label class="option"><input type="radio" name="q3" value="B"> B) Para que os trabalhadores participem de mais reuniões administrativas</label>
-                <label class="option"><input type="radio" name="q3" value="C"> C) Para que o trabalhador tenha condições de prestar atendimento humanizado, através de capacitação, trabalho em equipe e valorização profissional</label>
-                <label class="option"><input type="radio" name="q3" value="D"> D) Somente para cumprir exigências legais sem impacto real na qualidade do atendimento</label>
-            </div>
-
-            <div class="question">
-                <div class="question-header">Questão 4 - Política Nacional de Humanização</div>
-                <div class="question-text">A indissociabilidade entre atenção e gestão é um princípio fundamental da PNH. Na sua prática como técnico de enfermagem, você observa que mudanças na forma de cuidar dos pacientes estão diretamente relacionadas a mudanças na gestão do serviço. Qual afirmação melhor representa esse conceito?</div>
-                <label class="option"><input type="radio" name="q4" value="A"> A) A forma como cuidamos dos pacientes independe completamente de como a gestão organiza o trabalho</label>
-                <label class="option"><input type="radio" name="q4" value="B"> B) Apenas mudanças na gestão administrativa são suficientes para melhorar o cuidado</label>
-                <label class="option"><input type="radio" name="q4" value="C"> C) Os trabalhadores não devem participar das decisões de gestão, apenas executar tarefas</label>
-                <label class="option"><input type="radio" name="q4" value="D"> D) A alteração dos modos de cuidar é inseparável da alteração dos modos de gerir, e incluir trabalhadores na gestão é fundamental para que reinventem seus processos de trabalho</label>
-            </div>
-
-            <div class="question">
-                <div class="question-header">Questão 5 - Política Nacional de Humanização</div>
-                <div class="question-text">O Grupo de Trabalho de Humanização (GTH) é uma estratégia importante da PNH para implementação da política nas instituições de saúde. Qual é o papel principal dos membros que compõem um GTH em um hospital?</div>
-                <label class="option"><input type="radio" name="q5" value="A"> A) Serem multiplicadores e apoiadores da PNH, atuando como construtores de novas realidades em saúde e futuros formadores da PNH</label>
-                <label class="option"><input type="radio" name="q5" value="B"> B) Exercerem controle disciplinar sobre os funcionários que não seguem protocolos</label>
-                <label class="option"><input type="radio" name="q5" value="C"> C) Focarem exclusivamente em reduzir custos e aumentar a eficiência operacional</label>
-                <label class="option"><input type="radio" name="q5" value="D"> D) Substituírem a gestão administrativa nas decisões do dia a dia</label>
-            </div>
-
-            <div class="question">
-                <div class="question-header">Questão 6 - Política Nacional de Humanização</div>
-                <div class="question-text">A valorização da participação de usuários, profissionais e gestores é essencial para a PNH. Em uma reunião de equipe, discute-se sobre como envolver mais os pacientes nas decisões sobre seu tratamento. Qual estratégia está mais alinhada com os princípios da humanização?</div>
-                <label class="option"><input type="radio" name="q6" value="A"> A) Informar apenas o necessário ao paciente para que ele siga as orientações médicas sem questionamentos</label>
-                <label class="option"><input type="radio" name="q6" value="B"> B) Incluir usuários e suas redes sócio-familiares nos processos de cuidado, ampliando a corresponsabilização no cuidado de si</label>
-                <label class="option"><input type="radio" name="q6" value="C"> C) Tomar todas as decisões em equipe sem consultar o paciente ou sua família</label>
-                <label class="option"><input type="radio" name="q6" value="D"> D) Delegar todas as decisões exclusivamente para a família do paciente</label>
-            </div>
-
-            <div class="question">
-                <div class="question-header">Questão 7 - Política Nacional de Humanização</div>
-                <div class="question-text">A ambiência hospitalar é um aspecto importante da humanização segundo o Ministério da Saúde. Você está participando de uma reforma do seu setor no hospital e precisa sugerir melhorias baseadas nos princípios da PNH. Qual característica do ambiente NÃO é recomendada para promover humanização?</div>
-                <label class="option"><input type="radio" name="q7" value="A"> A) Utilização de cores variadas e elementos decorativos para tornar o ambiente mais acolhedor</label>
-                <label class="option"><input type="radio" name="q7" value="B"> B) Garantir iluminação natural através de janelas com vista para áreas externas</label>
-                <label class="option"><input type="radio" name="q7" value="C"> C) Manter o ambiente completamente branco e monocromático, pois causa cansaço visual e distração nos profissionais</label>
-                <label class="option"><input type="radio" name="q7" value="D"> D) Criar espaços com contato visual para áreas externas, preferencialmente com paisagens naturais</label>
-            </div>
-
-            <div class="question">
-                <div class="question-header">Questão 8 - Política Nacional de Humanização</div>
-                <div class="question-text">As relações interpessoais no ambiente de trabalho em saúde são fundamentais para a humanização. Durante o plantão, você percebe tensões entre membros da equipe que podem afetar o cuidado aos pacientes. Segundo a PNH, qual abordagem é mais adequada para melhorar essas relações?</div>
-                <label class="option"><input type="radio" name="q8" value="A"> A) Ignorar os conflitos esperando que se resolvam naturalmente com o tempo</label>
-                <label class="option"><input type="radio" name="q8" value="B"> B) Promover reflexão, diálogo, escuta e autossensibilização através de ações democráticas e participativas envolvendo toda a equipe</label>
-                <label class="option"><input type="radio" name="q8" value="C"> C) Separar fisicamente os profissionais que têm conflitos para evitar interações</label>
-                <label class="option"><input type="radio" name="q8" value="D"> D) Aplicar punições administrativas sem buscar compreender as causas dos conflitos</label>
-            </div>
-
-            <div class="question">
-                <div class="question-header">Questão 9 - Política Nacional de Humanização</div>
-                <div class="question-text">A ergonomia do ambiente de trabalho está relacionada à humanização tanto para trabalhadores quanto para usuários. Você nota que muitos colegas se queixam de dores musculares e cansaço excessivo. Qual aspecto da ergonomia, segundo a PNH, deve ser considerado para melhorar essa situação?</div>
-                <label class="option"><input type="radio" name="q9" value="A"> A) A ergonomia envolve apenas a disposição de móveis, sem relação com métodos de trabalho</label>
-                <label class="option"><input type="radio" name="q9" value="B"> B) Aspectos como cor, iluminação e conforto térmico não influenciam na saúde do trabalhador</label>
-                <label class="option"><input type="radio" name="q9" value="C"> C) A ergonomia abrange instrumentos, métodos de organização do trabalho, capacidades psicofisiológicas, antropométricas e biomecânicas que interagem entre si</label>
-                <label class="option"><input type="radio" name="q9" value="D"> D) Apenas treinamentos técnicos são suficientes, sem necessidade de adequação do ambiente físico</label>
-            </div>
-
-            <div class="question">
-                <div class="question-header">Questão 10 - Política Nacional de Humanização</div>
-                <div class="question-text">A PNH propõe a criação de espaços para compartilhar experiências e reunir a equipe como forma de contribuir para a produção do cuidado. Um hospital implementou reuniões semanais onde os profissionais podem falar sobre suas dificuldades e sucessos. Qual o principal benefício dessa prática segundo os princípios da humanização?</div>
-                <label class="option"><input type="radio" name="q10" value="A"> A) Aumentar o controle gerencial sobre as atividades dos funcionários</label>
-                <label class="option"><input type="radio" name="q10" value="B"> B) Criar oportunidades para críticas e penalizações dos profissionais com baixo desempenho</label>
-                <label class="option"><input type="radio" name="q10" value="C"> C) Reduzir o tempo dedicado ao atendimento direto dos pacientes</label>
-                <label class="option"><input type="radio" name="q10" value="D"> D) Contribuir positivamente para a produção do cuidado de forma mais prazerosa, com eficácia e eficiência, além de promover o autocuidado do trabalhador</label>
-            </div>
-
-            <!-- Questões Saúde Profissional -->
-            <div class="question">
-                <div class="question-header">Questão 11 - Saúde Profissional</div>
-                <div class="question-text">O estresse ocupacional é uma realidade crescente entre os profissionais de enfermagem. Diversos fatores intrapsíquicos podem contribuir para o desenvolvimento do estresse relacionado ao trabalho. Dentre as opções abaixo, qual NÃO representa um fator intrapsíquico do estresse em relação ao trabalho?</div>
-                <label class="option"><input type="radio" name="q11" value="A"> A) Sensação de insegurança e insuficiência profissional</label>
-                <label class="option"><input type="radio" name="q11" value="B"> B) Ruídos e ergonomia inadequada do ambiente</label>
-                <label class="option"><input type="radio" name="q11" value="C"> C) Conflitos internos e desavenças familiares</label>
-                <label class="option"><input type="radio" name="q11" value="D"> D) Falta de projetos de vida e medo do desemprego</label>
-            </div>
-
-            <div class="question">
-                <div class="question-header">Questão 12 - Saúde Profissional</div>
-                <div class="question-text">O assédio moral no ambiente de trabalho é caracterizado por condutas específicas que causam dano ao trabalhador. Para que uma situação seja caracterizada como assédio moral, alguns elementos precisam estar presentes. Qual conjunto de elementos caracteriza adequadamente o assédio moral?</div>
-                <label class="option"><input type="radio" name="q12" value="A"> A) Críticas construtivas realizadas em público, transferências por necessidade administrativa e avaliações de desempenho</label>
-                <label class="option"><input type="radio" name="q12" value="B"> B) Conduta abusiva, natureza psicológica da conduta, reiteração (repetição) e finalidade de exclusão</label>
-                <label class="option"><input type="radio" name="q12" value="C"> C) Atividades psicologicamente estressantes, conflitos esporádicos e exercício de autoridade hierárquica</label>
-                <label class="option"><input type="radio" name="q12" value="D"> D) Atribuição de tarefas, alteração de jornada e destituição de funções comissionadas</label>
-            </div>
-
-            <div class="question">
-                <div class="question-header">Questão 13 - Saúde Profissional</div>
-                <div class="question-text">Você trabalha em uma unidade hospitalar e percebe que um colega técnico de enfermagem do mesmo nível hierárquico tem feito comentários depreciativos repetidamente sobre outro colega, criando situações constrangedoras. Esse comportamento se enquadra em qual tipo de assédio moral?</div>
-                <label class="option"><input type="radio" name="q13" value="A"> A) Assédio moral vertical descendente, pois envolve relação entre colegas</label>
-                <label class="option"><input type="radio" name="q13" value="B"> B) Não se caracteriza como assédio moral, pois são apenas conflitos esporádicos</label>
-                <label class="option"><input type="radio" name="q13" value="C"> C) Assédio moral horizontal, pois ocorre entre profissionais do mesmo nível hierárquico</label>
-                <label class="option"><input type="radio" name="q13" value="D"> D) Assédio moral misto, pois envolve superiores e subordinados simultaneamente</label>
-            </div>
-
-            <div class="question">
-                <div class="question-header">Questão 14 - Saúde Profissional</div>
-                <div class="question-text">As fases do assédio moral seguem uma progressão que pode culminar em consequências graves para a vítima. Na segunda fase, conhecida como fase de estigmatização, observa-se um conjunto de comportamentos específicos do agressor. O que caracteriza principalmente essa fase?</div>
-                <label class="option"><input type="radio" name="q14" value="A"> A) Uma situação inicial de conflito que poderia ser resolvida através do diálogo</label>
-                <label class="option"><input type="radio" name="q14" value="B"> B) A intervenção positiva da direção da empresa com investigação e troca de posto</label>
-                <label class="option"><input type="radio" name="q14" value="C"> C) O abandono do trabalho e marginalização completa da vítima</label>
-                <label class="option"><input type="radio" name="q14" value="D"> D) O agressor utiliza estratégias de humilhação, ridicularização e isolamento social da vítima, que ainda não acredita no que está acontecendo</label>
-            </div>
-
-            <div class="question">
-                <div class="question-header">Questão 15 - Saúde Profissional</div>
-                <div class="question-text">A Síndrome de Burnout é uma condição que afeta diversos profissionais de saúde, incluindo técnicos de enfermagem. É importante diferenciá-la de outras condições como o estresse comum. Qual característica é específica da Síndrome de Burnout e a diferencia do estresse ocupacional regular?</div>
-                <label class="option"><input type="radio" name="q15" value="A"> A) É uma reação natural a situações de emergência com esgotamento físico e hipersensibilidade</label>
-                <label class="option"><input type="radio" name="q15" value="B"> B) Caracteriza-se por desilusão causada pelo excesso de situações estressantes, esgotamento emocional, falta de sensibilidade e redução da motivação</label>
-                <label class="option"><input type="radio" name="q15" value="C"> C) Apresenta apenas sintomas físicos como fadiga e dores musculares</label>
-                <label class="option"><input type="radio" name="q15" value="D"> D) Ocorre exclusivamente em profissionais que trabalham com atendimento ao público</label>
-            </div>
-
-            <div class="question">
-                <div class="question-header">Questão 16 - Saúde Profissional</div>
-                <div class="question-text">Um técnico de enfermagem apresenta sintomas como fadiga constante, distúrbios do sono, dores musculares, alterações de memória, falta de atenção, baixa autoestima, irritabilidade e perda de interesse pelo trabalho. Esses sintomas persistem há vários meses. Considerando o conjunto de manifestações, qual condição está mais provavelmente presente?</div>
-                <label class="option"><input type="radio" name="q16" value="A"> A) Estresse ocupacional agudo que se resolverá com alguns dias de descanso</label>
-                <label class="option"><input type="radio" name="q16" value="B"> B) Fadiga normal relacionada à carga horária de trabalho</label>
-                <label class="option"><input type="radio" name="q16" value="C"> C) Síndrome de Burnout, caracterizada por sintomas físicos, psíquicos e comportamentais progressivos</label>
-                <label class="option"><input type="radio" name="q16" value="D"> D) Preguiça e desmotivação pessoal sem relação com o trabalho</label>
-            </div>
-
-            <div class="question">
-                <div class="question-header">Questão 17 - Saúde Profissional</div>
-                <div class="question-text">Durante uma reunião de equipe, o enfermeiro coordenador critica publicamente o trabalho de um técnico de enfermagem, apontando erros cometidos e comparando-o negativamente com outros membros da equipe. Essa situação ocorre frequentemente. Como essa prática deve ser avaliada?</div>
-                <label class="option"><input type="radio" name="q17" value="A"> A) É um ato de gestão legítimo, pois supervisores podem criticar subordinados publicamente</label>
-                <label class="option"><input type="radio" name="q17" value="B"> B) É uma prática educativa necessária para melhorar o desempenho da equipe</label>
-                <label class="option"><input type="radio" name="q17" value="C"> C) Pode caracterizar assédio moral, pois críticas e avaliações não devem ser realizadas em público, expondo o trabalhador a situações vexatórias</label>
-                <label class="option"><input type="radio" name="q17" value="D"> D) É um conflito esporádico que não merece atenção especial</label>
-            </div>
-
-            <div class="question">
-                <div class="question-header">Questão 18 - Saúde Profissional</div>
-                <div class="question-text">O perfil do agressor em casos de assédio moral muitas vezes não é facilmente identificável, pois essas pessoas projetam uma imagem positiva de si mesmas. Qual característica frequentemente está presente no comportamento do agressor?</div>
-                <label class="option"><input type="radio" name="q18" value="A"> A) Demonstra insegurança constante e baixa autoestima em todas as situações</label>
-                <label class="option"><input type="radio" name="q18" value="B"> B) Tem receio dos êxitos e méritos alheios, agindo por sentimento de irritação e necessidade de sentir-se superior</label>
-                <label class="option"><input type="radio" name="q18" value="C"> C) Age impulsivamente sem premeditação ou intenção de causar dano</label>
-                <label class="option"><input type="radio" name="q18" value="D"> D) É facilmente identificável por todos devido ao seu comportamento abertamente hostil</label>
-            </div>
-
-            <div class="question">
-                <div class="question-header">Questão 19 - Saúde Profissional</div>
-                <div class="question-text">As consequências do assédio moral são diversas e afetam múltiplos aspectos da vida da vítima. Entre as consequências listadas, qual conjunto representa adequadamente os efeitos do assédio moral sobre a saúde do trabalhador?</div>
-                <label class="option"><input type="radio" name="q19" value="A"> A) Aumento da produtividade, melhora da autoestima e fortalecimento dos vínculos sociais</label>
-                <label class="option"><input type="radio" name="q19" value="B"> B) Apenas consequências administrativas como advertências e demissão</label>
-                <label class="option"><input type="radio" name="q19" value="C"> C) Distúrbios orgânicos, problemas gástricos, úlceras, baixa autoestima, ansiedade, pânico, depressão e possível uso de drogas</label>
-                <label class="option"><input type="radio" name="q19" value="D"> D) Sintomas leves e transitórios que desaparecem espontaneamente</label>
-            </div>
-
-            <div class="question">
-                <div class="question-header">Questão 20 - Saúde Profissional</div>
-                <div class="question-text">Em uma instituição de saúde, foi implementado um canal de denúncia e programa de compliance para lidar com casos de assédio moral. Qual é a importância dessas ferramentas no contexto organizacional?</div>
-                <label class="option"><input type="radio" name="q20" value="A"> A) São mecanismos apenas burocráticos sem impacto real na prevenção do assédio</label>
-                <label class="option"><input type="radio" name="q20" value="B"> B) Servem exclusivamente para punir trabalhadores que cometem erros técnicos</label>
-                <label class="option"><input type="radio" name="q20" value="C"> C) Representam possibilidades de tratativas para identificar, prevenir e intervir em situações de assédio moral</label>
-                <label class="option"><input type="radio" name="q20" value="D"> D) Devem ser utilizadas apenas em grandes corporações, não em hospitais</label>
-            </div>
-
-            <!-- Questões Diversidade e Inclusão -->
-            <div class="question">
-                <div class="question-header">Questão 21 - Diversidade e Inclusão</div>
-                <div class="question-text">Durante o atendimento em uma unidade de saúde, um técnico de enfermagem se depara com diferentes configurações familiares: casais homoafetivos, famílias monoparentais, avós cuidadores e outras estruturas. Segundo os princípios de diversidade e inclusão, qual é a abordagem mais adequada?</div>
-                <label class="option"><input type="radio" name="q21" value="A"> A) Reconhecer e validar todas as formas de configuração familiar, utilizando linguagem inclusiva e evitando pressuposições sobre a estrutura familiar do paciente</label>
-                <label class="option"><input type="radio" name="q21" value="B"> B) Seguir apenas o modelo tradicional de família nuclear nos formulários e abordagens</label>
-                <label class="option"><input type="radio" name="q21" value="C"> C) Evitar perguntas sobre a composição familiar para não criar constrangimentos</label>
-                <label class="option"><input type="radio" name="q21" value="D"> D) Tratar todas as famílias da mesma forma, sem considerar suas particularidades</label>
-            </div>
-
-            <div class="question">
-                <div class="question-header">Questão 22 - Diversidade e Inclusão</div>
-                <div class="question-text">A diversidade nas equipes de saúde traz múltiplos benefícios para o cuidado dos pacientes. Qual das alternativas apresenta corretamente uma vantagem da diversidade e inclusão na área da saúde?</div>
-                <label class="option"><input type="radio" name="q22" value="A"> A) Aumenta a complexidade administrativa sem benefícios práticos para o atendimento</label>
-                <label class="option"><input type="radio" name="q22" value="B"> B) Equipes diversas trazem diferentes perspectivas e experiências, enriquecendo a tomada de decisões e resultando em atendimento mais abrangente e eficaz</label>
-                <label class="option"><input type="radio" name="q22" value="C"> C) Cria mais conflitos na equipe, prejudicando a qualidade do cuidado</label>
-                <label class="option"><input type="radio" name="q22" value="D"> D) É relevante apenas do ponto de vista legal, sem impacto na prática clínica</label>
-            </div>
-
-            <div class="question">
-                <div class="question-header">Questão 23 - Diversidade e Inclusão</div>
-                <div class="question-text">Um paciente transgênero é admitido na unidade e solicita ser chamado por seu nome social, diferente do nome que consta nos documentos. Como o técnico de enfermagem deve proceder de acordo com os princípios de diversidade e inclusão?</div>
-                <label class="option"><input type="radio" name="q23" value="A"> A) Ignorar a solicitação e utilizar apenas o nome do documento de identidade</label>
-                <label class="option"><input type="radio" name="q23" value="B"> B) Utilizar o nome social conforme solicitado pelo paciente, respeitando sua identidade de gênero e dignidade</label>
-                <label class="option"><input type="radio" name="q23" value="C"> C) Questionar a escolha do paciente e tentar convencê-lo a aceitar o nome de registro</label>
-                <label class="option"><input type="radio" name="q23" value="D"> D) Chamar o paciente apenas pelo número do leito para evitar constrangimentos</label>
-            </div>
-
-            <div class="question">
-                <div class="question-header">Questão 24 - Diversidade e Inclusão</div>
-                <div class="question-text">Os formulários de admissão de um hospital estão sendo revisados para refletir a diversidade familiar. Qual mudança está mais alinhada com as estratégias de trabalhar a diversidade familiar na área de saúde?</div>
-                <label class="option"><input type="radio" name="q24" value="A"> A) Manter apenas os campos "pai" e "mãe" para acompanhantes</label>
-                <label class="option"><input type="radio" name="q24" value="B"> B) Incluir campos como "responsável legal" ou "pessoa de referência" em vez de categorias rígidas</label>
-                <label class="option"><input type="radio" name="q24" value="C"> C) Solicitar comprovação legal de todos os vínculos familiares antes do atendimento</label>
-                <label class="option"><input type="radio" name="q24" value="D"> D) Eliminar completamente qualquer referência à família nos formulários</label>
-            </div>
-
-            <div class="question">
-                <div class="question-header">Questão 25 - Diversidade e Inclusão</div>
-                <div class="question-text">Durante uma reunião de equipe, você percebe que alguns colegas fazem piadas baseadas em estereótipos raciais. Segundo as práticas de prevenção da discriminação no ambiente de trabalho, qual atitude é mais apropriada?</div>
-                <label class="option"><input type="radio" name="q25" value="A"> A) Participar das piadas para manter o bom relacionamento com a equipe</label>
-                <label class="option"><input type="radio" name="q25" value="B"> B) Ignorar a situação, pois são apenas brincadeiras inofensivas</label>
-                <label class="option"><input type="radio" name="q25" value="C"> C) Abordar a situação destacando a importância de uma comunicação respeitosa, livre de termos racistas e estereótipos</label>
-                <label class="option"><input type="radio" name="q25" value="D"> D) Denunciar imediatamente todos os envolvidos sem tentar dialogar primeiro</label>
-            </div>
-
-            <div class="question">
-                <div class="question-header">Questão 26 - Diversidade e Inclusão</div>
-                <div class="question-text">A competência cultural é essencial para a comunicação eficaz em contextos diversos. Um técnico de enfermagem atende uma família que pratica rituais religiosos específicos relacionados à saúde. Qual abordagem demonstra competência cultural?</div>
-                <label class="option"><input type="radio" name="q26" value="A"> A) Desencorajar as práticas religiosas por não serem baseadas em evidências científicas</label>
-                <label class="option"><input type="radio" name="q26" value="B"> B) Reconhecer e respeitar as crenças e práticas de saúde do paciente, buscando integrá-las ao plano de cuidados quando possível e seguro</label>
-                <label class="option"><input type="radio" name="q26" value="C"> C) Fingir concordar com as práticas mas não incorporá-las ao cuidado</label>
-                <label class="option"><input type="radio" name="q26" value="D"> D) Insistir que o paciente abandone suas práticas religiosas para receber o tratamento</label>
-            </div>
-
-            <div class="question">
-                <div class="question-header">Questão 27 - Diversidade e Inclusão</div>
-                <div class="question-text">Uma instituição de saúde está implementando políticas de inclusão para pessoas com deficiência (PCD). Além da acessibilidade física, que outros aspectos devem ser considerados para um ambiente verdadeiramente inclusivo?</div>
-                <label class="option"><input type="radio" name="q27" value="A"> A) Apenas rampas e elevadores são suficientes para garantir inclusão</label>
-                <label class="option"><input type="radio" name="q27" value="B"> B) Acessibilidade comunicacional, oportunidades iguais de desenvolvimento profissional e valorização das diferentes identidades e experiências</label>
-                <label class="option"><input type="radio" name="q27" value="C"> C) Contratar pessoas com deficiência apenas para cumprir cotas legais</label>
-                <label class="option"><input type="radio" name="q27" value="D"> D) Segregar profissionais com deficiência em setores específicos</label>
-            </div>
-
-            <div class="question">
-                <div class="question-header">Questão 28 - Diversidade e Inclusão</div>
-                <div class="question-text">Durante a anamnese, um paciente idoso de origem indígena relata usar plantas medicinais para tratar sua condição. O técnico de enfermagem, formado em uma abordagem biomédica ocidental, precisa registrar essa informação. Qual atitude reflete melhor a adaptação do atendimento às necessidades individuais?</div>
-                <label class="option"><input type="radio" name="q28" value="A"> A) Ridicularizar o uso de plantas medicinais como prática ultrapassada</label>
-                <label class="option"><input type="radio" name="q28" value="B"> B) Registrar a informação sem julgamento e comunicar à equipe para avaliação de possíveis interações com tratamentos prescritos</label>
-                <label class="option"><input type="radio" name="q28" value="C"> C) Omitir essa informação do prontuário por considerá-la irrelevante</label>
-                <label class="option"><input type="radio" name="q28" value="D"> D) Impor imediatamente que o paciente abandone o uso das plantas</label>
-            </div>
-
-            <div class="question">
-                <div class="question-header">Questão 29 - Diversidade e Inclusão</div>
-                <div class="question-text">A promoção da equidade em saúde envolve identificar e abordar barreiras que impedem o acesso de diferentes grupos populacionais. Qual situação exemplifica uma ação voltada para a promoção da equidade?</div>
-                <label class="option"><input type="radio" name="q29" value="A"> A) Oferecer o mesmo tratamento padronizado para todos os pacientes, independente de suas características</label>
-                <label class="option"><input type="radio" name="q29" value="B"> B) Criar grupos de apoio específicos para populações vulneráveis e oferecer materiais educativos em diferentes idiomas e formatos acessíveis</label>
-                <label class="option"><input type="radio" name="q29" value="C"> C) Priorizar apenas pacientes com maior poder aquisitivo</label>
-                <label class="option"><input type="radio" name="q29" value="D"> D) Limitar o atendimento a grupos específicos para otimizar recursos</label>
-            </div>
-
-            <div class="question">
-                <div class="question-header">Questão 30 - Diversidade e Inclusão</div>
-                <div class="question-text">O respeito à autonomia do paciente é fundamental no cuidado de enfermagem, especialmente em contextos de diversidade. Qual prática melhor exemplifica o respeito à autonomia em um contexto de diversidade cultural?</div>
-                <label class="option"><input type="radio" name="q30" value="A"> A) Tomar decisões em nome do paciente para agilizar o processo de tratamento</label>
-                <label class="option"><input type="radio" name="q30" value="B"> B) Impor as recomendações médicas sem considerar as preferências culturais do paciente</label>
-                <label class="option"><input type="radio" name="q30" value="C"> C) Garantir que o paciente esteja totalmente informado e envolvido nas decisões sobre seu tratamento, respeitando suas escolhas e valores culturais</label>
-                <label class="option"><input type="radio" name="q30" value="D"> D) Delegar todas as decisões exclusivamente para a família, ignorando a vontade do paciente</label>
-            </div>
-
-            <button type="button" class="btn" onclick="submitQuiz()">Finalizar e Ver Resultado</button>
-        </form>
-
-        <div id="resultado">
-            <div class="score" id="scoreDisplay"></div>
-            <div id="gabarito"></div>
-            <button class="btn" onclick="window.location.reload()">Refazer Simulado</button>
-        </div>
+<div class="container screen" id="quiz-screen">
+    <div class="header-nav">
+        <button class="back-arrow" onclick="voltarAoMenu()" title="Voltar ao Menu">&#8592;</button>
+        <h1 id="quiz-title">Matéria</h1>
     </div>
 
-    <script>
-        const gabarito = {
-            q1: 'A', q2: 'B', q3: 'C', q4: 'D', q5: 'A',
-            q6: 'B', q7: 'C', q8: 'B', q9: 'C', q10: 'D',
-            q11: 'B', q12: 'B', q13: 'C', q14: 'D', q15: 'B',
-            q16: 'C', q17: 'C', q18: 'B', q19: 'C', q20: 'C',
-            q21: 'A', q22: 'B', q23: 'B', q24: 'B', q25: 'C',
-            q26: 'B', q27: 'B', q28: 'B', q29: 'B', q30: 'C'
-        };
+    <div id="questions-container"></div>
+    
+    <button class="action-btn" onclick="calcularResultados()">Finalizar Simulado</button>
+    <button class="action-btn back-btn" onclick="voltarAoMenu()">Cancelar e Voltar</button>
+</div>
 
-        const questoes = {
-            q1: 'A PNH propõe resgatar princípios do SUS',
-            q2: 'Princípio da transversalidade na PNH',
-            q3: 'Importância de investir no trabalhador',
-            q4: 'Indissociabilidade entre atenção e gestão',
-            q5: 'Papel do Grupo de Trabalho de Humanização',
-            q6: 'Valorização da participação de usuários',
-            q7: 'Ambiência hospitalar e humanização',
-            q8: 'Relações interpessoais na equipe',
-            q9: 'Ergonomia no ambiente de trabalho',
-            q10: 'Espaços de compartilhamento na equipe',
-            q11: 'Fatores intrapsíquicos do estresse',
-            q12: 'Caracterização do assédio moral',
-            q13: 'Tipos de assédio moral',
-            q14: 'Fases do assédio moral',
-            q15: 'Diferença entre estresse e Burnout',
-            q16: 'Sintomas da Síndrome de Burnout',
-            q17: 'Assédio moral vs atos de gestão',
-            q18: 'Perfil do agressor no assédio moral',
-            q19: 'Consequências do assédio moral',
-            q20: 'Canal de denúncia e compliance',
-            q21: 'Diversidade familiar na saúde',
-            q22: 'Benefícios da diversidade na saúde',
-            q23: 'Nome social e identidade de gênero',
-            q24: 'Formulários inclusivos',
-            q25: 'Prevenção da discriminação no trabalho',
-            q26: 'Competência cultural',
-            q27: 'Inclusão de pessoas com deficiência',
-            q28: 'Atendimento individualizado',
-            q29: 'Promoção da equidade em saúde',
-            q30: 'Respeito à autonomia do paciente'
-        };
+<div class="container screen" id="result-screen">
+    <div class="header-nav">
+        <button class="back-arrow" onclick="voltarAoMenu()" title="Voltar ao Menu">&#8592;</button>
+        <h1>Resultado</h1>
+    </div>
+    
+    <div class="score-board" id="final-score"></div>
+    <div id="detailed-results"></div>
+    
+    <button class="action-btn" onclick="voltarAoMenu()">Voltar ao Menu Principal</button>
+</div>
 
-        // Adicionar evento de clique nas opções
-        document.querySelectorAll('.option').forEach(option => {
-            option.addEventListener('click', function() {
-                const radio = this.querySelector('input[type="radio"]');
-                const name = radio.name;
-                
-                // Remove seleção anterior
-                document.querySelectorAll(`input[name="${name}"]`).forEach(r => {
-                    r.parentElement.classList.remove('selected');
-                });
-                
-                // Adiciona seleção atual
-                radio.checked = true;
-                this.classList.add('selected');
-            });
+<script>
+    /* ==============================================================
+       ÁREA DE DADOS 
+       ============================================================== */
+    
+    const bancoDeQuestoes = {
+        // --- MATÉRIA 1: RELAÇÕES HUMANAS ---
+        // prettier-ignore
+        relacoes: [
+            { id: 1, text: "A Política Nacional de Humanização (PNH) foi criada em 2003 com o objetivo de efetivar os princípios do SUS nas práticas cotidianas de saúde. Qual das alternativas apresenta corretamente os princípios do SUS que a PNH propõe resgatar?", options: { a: "Universalidade, equidade, integralidade, descentralização, hierarquização e participação popular", b: "Privatização, centralização, fragmentação do cuidado e gestão autoritária", c: "Atendimento especializado, exclusividade, tratamento diferenciado e gestão verticalizada", d: "Seletividade, hierarquia rígida, individualismo e gestão por resultados financeiros" }, correct: "a" },
+            { id: 2, text: "Um dos princípios norteadores da PNH é a transversalidade. Considerando o contexto hospitalar, como esse princípio pode ser aplicado no dia a dia?", options: { a: "Mantendo cada setor isolado em suas funções específicas sem comunicação entre as equipes", b: "Promovendo o aumento da comunicação intra e intergrupos, facilitando o diálogo entre diferentes setores e profissionais", c: "Estabelecendo uma hierarquia rígida onde apenas os gestores tomam decisões", d: "Limitando a participação dos usuários nas decisões sobre seu próprio cuidado" }, correct: "b" },
+            { id: 3, text: "A PNH enfatiza que a humanização também envolve aspectos relacionados aos profissionais de saúde. Segundo o documento, qual é a importância de investir no trabalhador?", options: { a: "Apenas para aumentar a produtividade e reduzir custos operacionais da instituição", b: "Para que os trabalhadores participem de mais reuniões administrativas", c: "Para que o trabalhador tenha condições de prestar atendimento humanizado, através de capacitação, trabalho em equipe e valorização profissional", d: "Somente para cumprir exigências legais sem impacto real na qualidade do atendimento" }, correct: "c" },
+            { id: 4, text: "A indissociabilidade entre atenção e gestão é um princípio fundamental da PNH. Qual afirmação melhor representa esse conceito?", options: { a: "A forma como cuidamos dos pacientes independe completamente de como a gestão organiza o trabalho", b: "Apenas mudanças na gestão administrativa são suficientes para melhorar o cuidado", c: "Os trabalhadores não devem participar das decisões de gestão, apenas executar tarefas", d: "A alteração dos modos de cuidar é inseparável da alteração dos modos de gerir, e incluir trabalhadores na gestão é fundamental para que reinventem seus processos de trabalho" }, correct: "d" },
+            { id: 5, text: "O Grupo de Trabalho de Humanização (GTH) é uma estratégia importante da PNH. Qual é o papel principal dos membros que compõem um GTH?", options: { a: "Serem multiplicadores e apoiadores da PNH, atuando como construtores de novas realidades em saúde e futuros formadores da PNH", b: "Exercerem controle disciplinar sobre os funcionários que não seguem protocolos", c: "Focarem exclusivamente em reduzir custos e aumentar a eficiência operacional", d: "Substituírem a gestão administrativa nas decisões do dia a dia" }, correct: "a" },
+            { id: 6, text: "A valorização da participação de usuários, profissionais e gestores é essencial. Qual estratégia está mais alinhada com os princípios da humanização?", options: { a: "Informar apenas o necessário ao paciente para que ele siga as orientações médicas sem questionamentos", b: "Incluir usuários e suas redes sócio-familiares nos processos de cuidado, ampliando a corresponsabilização no cuidado de si", c: "Tomar todas as decisões em equipe sem consultar o paciente ou sua família", d: "Delegar todas as decisões exclusivamente para a família do paciente" }, correct: "b" },
+            { id: 7, text: "A ambiência hospitalar é um aspecto importante da humanização. Qual característica do ambiente NÃO é recomendada para promover humanização?", options: { a: "Utilização de cores variadas e elementos decorativos para tornar o ambiente mais acolhedor", b: "Garantir iluminação natural através de janelas com vista para áreas externas", c: "Manter o ambiente completamente branco e monocromático, pois causa cansaço visual e distração nos profissionais", d: "Criar espaços com contato visual para áreas externas, preferencialmente com paisagens naturais" }, correct: "c" },
+            { id: 8, text: "Durante o plantão, você percebe tensões entre membros da equipe. Segundo a PNH, qual abordagem é mais adequada para melhorar essas relações?", options: { a: "Ignorar os conflitos esperando que se resolvam naturalmente com o tempo", b: "Promover reflexão, diálogo, escuta e autossensibilização através de ações democráticas e participativas envolvendo toda a equipe", c: "Separar fisicamente os profissionais que têm conflitos para evitar interações", d: "Aplicar punições administrativas sem buscar compreender as causas dos conflitos" }, correct: "b" },
+            { id: 9, text: "Você nota que muitos colegas se queixam de dores musculares e cansaço. Qual aspecto da ergonomia, segundo a PNH, deve ser considerado?", options: { a: "A ergonomia envolve apenas a disposição de móveis, sem relação com métodos de trabalho", b: "Aspectos como cor, iluminação e conforto térmico não influenciam na saúde do trabalhador", c: "A ergonomia abrange instrumentos, métodos de organização do trabalho, capacidades psicofisiológicas, antropométricas e biomecânicas que interagem entre si", d: "Apenas treinamentos técnicos são suficientes, sem necessidade de adequação do ambiente físico" }, correct: "c" },
+            { id: 10, text: "A PNH propõe a criação de espaços para compartilhar experiências. Qual o principal benefício dessa prática?", options: { a: "Aumentar o controle gerencial sobre as atividades dos funcionários", b: "Criar oportunidades para críticas e penalizações dos profissionais com baixo desempenho", c: "Reduzir o tempo dedicado ao atendimento direto dos pacientes", d: "Contribuir positivamente para a produção do cuidado de forma mais prazerosa, com eficácia e eficiência, além de promover o autocuidado do trabalhador" }, correct: "d" },
+            { id: 11, text: "O estresse ocupacional é uma realidade crescente. Dentre as opções abaixo, qual NÃO representa um fator intrapsíquico do estresse em relação ao trabalho?", options: { a: "Sensação de insegurança e insuficiência profissional", b: "Ruídos e ergonomia inadequada do ambiente", c: "Conflitos internos e desavenças familiares", d: "Falta de projetos de vida e medo do desemprego" }, correct: "b" },
+            { id: 12, text: "Para que uma situação seja caracterizada como assédio moral, alguns elementos precisam estar presentes. Qual conjunto caracteriza adequadamente o assédio moral?", options: { a: "Críticas construtivas realizadas em público, transferências por necessidade administrativa e avaliações de desempenho", b: "Conduta abusiva, natureza psicológica da conduta, reiteração (repetição) e finalidade de exclusão", c: "Atividades psicologicamente estressantes, conflitos esporádicos e exercício de autoridade hierárquica", d: "Atribuição de tarefas, alteração de jornada e destituição de funções comissionadas" }, correct: "b" },
+            { id: 13, text: "Um colega técnico do mesmo nível hierárquico tem feito comentários depreciativos repetidamente sobre outro colega. Esse comportamento se enquadra em qual tipo de assédio moral?", options: { a: "Assédio moral vertical descendente, pois envolve relação entre colegas", b: "Não se caracteriza como assédio moral, pois são apenas conflitos esporádicos", c: "Assédio moral horizontal, pois ocorre entre profissionais do mesmo nível hierárquico", d: "Assédio moral misto, pois envolve superiores e subordinados simultaneamente" }, correct: "c" },
+            { id: 14, text: "Na segunda fase do assédio moral (estigmatização), o que caracteriza principalmente o comportamento do agressor?", options: { a: "Uma situação inicial de conflito que poderia ser resolvida através do diálogo", b: "A intervenção positiva da direção da empresa com investigação e troca de posto", c: "O abandono do trabalho e marginalização completa da vítima", d: "O agressor utiliza estratégias de humilhação, ridicularização e isolamento social da vítima, que ainda não acredita no que está acontecendo" }, correct: "d" },
+            { id: 15, text: "Qual característica é específica da Síndrome de Burnout e a diferencia do estresse ocupacional regular?", options: { a: "É uma reação natural a situações de emergência com esgotamento físico e hipersensibilidade", b: "Caracteriza-se por desilusão causada pelo excesso de situações estressantes, esgotamento emocional, falta de sensibilidade e redução da motivação", c: "Apresenta apenas sintomas físicos como fadiga e dores musculares", d: "Ocorre exclusivamente em profissionais que trabalham com atendimento ao público" }, correct: "b" },
+            { id: 16, text: "Um técnico apresenta fadiga constante, distúrbios do sono, dores, alterações de memória, falta de atenção e baixa autoestima há meses. Qual condição está mais provavelmente presente?", options: { a: "Estresse ocupacional agudo que se resolverá com alguns dias de descanso", b: "Fadiga normal relacionada à carga horária de trabalho", c: "Síndrome de Burnout, caracterizada por sintomas físicos, psíquicos e comportamentais progressivos", d: "Preguiça e desmotivação pessoal sem relação com o trabalho" }, correct: "c" },
+            { id: 17, text: "O enfermeiro coordenador critica publicamente o trabalho de um técnico repetidamente, expondo erros. Como essa prática deve ser avaliada?", options: { a: "É um ato de gestão legítimo, pois supervisores podem criticar subordinados publicamente", b: "É uma prática educativa necessária para melhorar o desempenho da equipe", c: "Pode caracterizar assédio moral, pois críticas e avaliações não devem ser realizadas em público, expondo o trabalhador a situações vexatórias", d: "É um conflito esporádico que não merece atenção especial" }, correct: "c" },
+            { id: 18, text: "O perfil do agressor em casos de assédio moral muitas vezes projeta uma imagem positiva. Qual característica frequentemente está presente?", options: { a: "Demonstra insegurança constante e baixa autoestima em todas as situações", b: "Tem receio dos êxitos e méritos alheios, agindo por sentimento de irritação e necessidade de sentir-se superior", c: "Age impulsivamente sem premeditação ou intenção de causar dano", d: "É facilmente identificável por todos devido ao seu comportamento abertamente hostil" }, correct: "b" },
+            { id: 19, text: "Qual conjunto representa adequadamente os efeitos do assédio moral sobre a saúde do trabalhador?", options: { a: "Aumento da produtividade, melhora da autoestima e fortalecimento dos vínculos sociais", b: "Apenas consequências administrativas como advertências e demissão", c: "Distúrbios orgânicos, problemas gástricos, úlceras, baixa autoestima, ansiedade, pânico, depressão e possível uso de drogas", d: "Sintomas leves e transitórios que desaparecem espontaneamente" }, correct: "c" },
+            { id: 20, text: "Em uma instituição de saúde, foi implementado um canal de denúncia e programa de compliance. Qual é a importância dessas ferramentas?", options: { a: "São mecanismos apenas burocráticos sem impacto real na prevenção do assédio", b: "Servem exclusivamente para punir trabalhadores que cometem erros técnicos", c: "Representam possibilidades de tratativas para identificar, prevenir e intervir em situações de assédio moral", d: "Devem ser utilizadas apenas em grandes corporações, não em hospitais" }, correct: "c" },
+            { id: 21, text: "Um técnico se depara com diferentes configurações familiares (homoafetivos, monoparentais, etc.). Segundo os princípios de diversidade, qual a abordagem adequada?", options: { a: "Reconhecer e validar todas as formas de configuração familiar, utilizando linguagem inclusiva e evitando pressuposições sobre a estrutura familiar do paciente", b: "Seguir apenas o modelo tradicional de família nuclear nos formulários e abordagens", c: "Evitar perguntas sobre a composição familiar para não criar constrangimentos", d: "Tratar todas as famílias da mesma forma, sem considerar suas particularidades" }, correct: "a" },
+            { id: 22, text: "Qual das alternativas apresenta corretamente uma vantagem da diversidade e inclusão na área da saúde?", options: { a: "Aumenta a complexidade administrativa sem benefícios práticos para o atendimento", b: "Equipes diversas trazem diferentes perspectivas e experiências, enriquecendo a tomada de decisões e resultando em atendimento mais abrangente e eficaz", c: "Cria mais conflitos na equipe, prejudicando a qualidade do cuidado", d: "É relevante apenas do ponto de vista legal, sem impacto na prática clínica" }, correct: "b" },
+            { id: 23, text: "Um paciente transgênero solicita ser chamado por seu nome social. Como o técnico de enfermagem deve proceder?", options: { a: "Ignorar a solicitação e utilizar apenas o nome do documento de identidade", b: "Utilizar o nome social conforme solicitado pelo paciente, respeitando sua identidade de gênero e dignidade", c: "Questionar a escolha do paciente e tentar convencê-lo a aceitar o nome de registro", d: "Chamar o paciente apenas pelo número do leito para evitar constrangimentos" }, correct: "b" },
+            { id: 24, text: "Os formulários de admissão estão sendo revisados. Qual mudança está mais alinhada com as estratégias de trabalhar a diversidade familiar?", options: { a: "Manter apenas os campos 'pai' e 'mãe' para acompanhantes", b: "Incluir campos como 'responsável legal' ou 'pessoa de referência' em vez de categorias rígidas", c: "Solicitar comprovação legal de todos os vínculos familiares antes do atendimento", d: "Eliminar completamente qualquer referência à família nos formulários" }, correct: "b" },
+            { id: 25, text: "Você percebe que alguns colegas fazem piadas baseadas em estereótipos raciais. Qual atitude é mais apropriada?", options: { a: "Participar das piadas para manter o bom relacionamento com a equipe", b: "Ignorar a situação, pois são apenas brincadeiras inofensivas", c: "Abordar a situação destacando a importância de uma comunicação respeitosa, livre de termos racistas e estereótipos", d: "Denunciar imediatamente todos os envolvidos sem tentar dialogar primeiro" }, correct: "c" },
+            { id: 26, text: "Um técnico atende uma família que pratica rituais religiosos específicos relacionados à saúde. Qual abordagem demonstra competência cultural?", options: { a: "Desencorajar as práticas religiosas por não serem baseadas em evidências científicas", b: "Reconhecer e respeitar as crenças e práticas de saúde do paciente, buscando integrá-las ao plano de cuidados quando possível e seguro", c: "Fingir concordar com as práticas mas não incorporá-las ao cuidado", d: "Insistir que o paciente abandone suas práticas religiosas para receber o tratamento" }, correct: "b" },
+            { id: 27, text: "Além da acessibilidade física, que outros aspectos devem ser considerados para um ambiente inclusivo para pessoas com deficiência (PCD)?", options: { a: "Apenas rampas e elevadores são suficientes para garantir inclusão", b: "Acessibilidade comunicacional, oportunidades iguais de desenvolvimento profissional e valorização das diferentes identidades e experiências", c: "Contratar pessoas com deficiência apenas para cumprir cotas legais", d: "Segregar profissionais com deficiência em setores específicos" }, correct: "b" },
+            { id: 28, text: "Um paciente indígena relata usar plantas medicinais. Qual atitude reflete melhor a adaptação do atendimento às necessidades individuais?", options: { a: "Ridicularizar o uso de plantas medicinais como prática ultrapassada", b: "Registrar a informação sem julgamento e comunicar à equipe para avaliação de possíveis interações com tratamentos prescritos", c: "Omitir essa informação do prontuário por considerá-la irrelevante", d: "Impor imediatamente que o paciente abandone o uso das plantas" }, correct: "b" },
+            { id: 29, text: "A promoção da equidade em saúde envolve abordar barreiras. Qual situação exemplifica uma ação voltada para a equidade?", options: { a: "Oferecer o mesmo tratamento padronizado para todos os pacientes, independente de suas características", b: "Criar grupos de apoio específicos para populações vulneráveis e oferecer materiais educativos em diferentes idiomas e formatos acessíveis", c: "Priorizar apenas pacientes com maior poder aquisitivo", d: "Limitar o atendimento a grupos específicos para otimizar recursos" }, correct: "b" },
+            { id: 30, text: "O respeito à autonomia do paciente é fundamental. Qual prática melhor exemplifica isso em um contexto de diversidade?", options: { a: "Tomar decisões em nome do paciente para agilizar o processo de tratamento", b: "Impor as recomendações médicas sem considerar as preferências culturais do paciente", c: "Garantir que o paciente esteja totalmente informado e envolvido nas decisões sobre seu tratamento, respeitando suas escolhas e valores culturais", d: "Delegar todas as decisões exclusivamente para a família, ignorando a vontade do paciente" }, correct: "c" }
+        ],
+
+        // --- MATÉRIA 2: SAÚDE COLETIVA (VACINAS) ---
+        coletiva: [
+            { id: 1, tag: "BCG", text: "A vacina BCG é composta por bacilos vivos atenuados e protege contra formas graves da tuberculose. Sobre a técnica de administração e evolução da lesão vacinal, assinale a alternativa correta:", options: {a: "Deve ser administrada via subcutânea profunda, e a ausência de úlcera após 4 semanas indica erro técnico.", b: "A administração é intradérmica na inserção inferior do músculo deltoide direito; a evolução normal inclui mácula, pústula, úlcera e crosta, cicatrizando em até 12 semanas.", c: "A administração é intramuscular no vasto lateral da coxa, não devendo ser higienizada a pele previamente para não inativar o bacilo.", d: "Caso a úlcera demore mais de 12 semanas para cicatrizar, deve-se iniciar imediatamente o tratamento com esquema básico para tuberculose (Rifampicina + Isoniazida)."}, correct: "b" },
+            { id: 2, tag: "BCG", text: "Um recém-nascido de 25 dias é levado à UBS para vacinação de rotina. A mãe relata que a criança nasceu prematura com 31 semanas e pesando 1.850g. No momento da consulta, o bebê pesa 1.950g e está clinicamente estável. Qual a conduta correta referente à BCG?", options: {a: "Administrar a vacina imediatamente, pois a prematuridade não é contraindicação.", b: "Adiar a vacinação até que a criança atinja o peso mínimo de 2.000g, conforme normas do PNI.", c: "Administrar metade da dose (0,05ml) devido ao baixo peso.", d: "Contraindicar a vacina definitivamente e prescrever Isoniazida profilática."}, correct: "b" },
+            { id: 3, tag: "BCG", text: "De acordo com as Notas Técnicas mais recentes do Ministério da Saúde (PNI) sobre a revacinação da BCG, qual é a conduta para uma criança de 1 ano que recebeu a vacina ao nascer (com registro em carteira), mas não apresenta a cicatriz vacinal?", options: {a: "Revacinar imediatamente, pois a ausência de cicatriz é prova de falha imunológica.", b: "Não revacinar. A ausência de cicatriz não indica falta de proteção e a revacinação não é mais recomendada se houver registro da dose.", c: "Solicitar teste PPD (Tuberculínico) e revacinar apenas se o resultado for não reator.", d: "Aguardar até os 5 anos de idade e administrar uma dose de reforço escolar."}, correct: "b" },
+            { id: 4, tag: "BCG", text: "Após a administração da BCG, a mãe retorna à unidade preocupada com o surgimento de um gânglio axilar de 2 cm, sem supuração, na mesma axila do braço vacinado. O técnico deve orientar que:", options: {a: "Trata-se de uma linfadenopatia regional não supurada, um evento adverso esperado que geralmente regride espontaneamente, não necessitando de intervenção medicamentosa imediata.", b: "É um abscesso frio grave que exige drenagem cirúrgica imediata e notificação compulsória.", c: "Houve erro na aplicação (vacina profunda) e deve-se aplicar compressas quentes três vezes ao dia.", d: "A criança está com tuberculose ganglionar ativa e deve ser isolada de outros familiares."}, correct: "a" },
+            { id: 5, tag: "Hep B", text: "Um recém-nascido é filho de mãe portadora do vírus da Hepatite B (HBsAg positiva). Para prevenir a transmissão vertical, além da vacina contra Hepatite B nas primeiras 12 horas de vida, qual outra medida é indispensável?", options: {a: "Suspender o aleitamento materno permanentemente.", b: "Administrar Imunoglobulina Humana Anti-Hepatite B (IGHAHB), preferencialmente nas primeiras 12 a 24 horas, em membro oposto ao da vacina.", c: "Administrar dose dobrada da vacina Hepatite B, dispensando a imunoglobulina.", d: "Iniciar tratamento com antiviral (Lamivudina) para o recém-nascido por 30 dias."}, correct: "b" },
+            { id: 6, tag: "Hep B", text: "Para um adulto de 35 anos, sem comprovação vacinal anterior, o esquema completo da vacina contra Hepatite B recombinante deve ser realizado com:", options: {a: "Dose única, via intramuscular no deltoide.", b: "Duas doses com intervalo de 6 meses entre elas.", c: "Três doses, com intervalo de 30 dias entre a 1ª e a 2ª, e 6 meses entre a 1ª e a 3ª (0, 1 e 6 meses).", d: "Três doses mensais consecutivas (0, 1 e 2 meses) para garantir soroconversão rápida."}, correct: "c" },
+            { id: 7, tag: "Hep B", text: "A via de administração da vacina Hepatite B varia conforme a idade e a massa muscular. Para neonatos e lactentes, a técnica correta recomendada pelo PNI é:", options: {a: "Intramuscular profunda no músculo vasto lateral da coxa, devido ao risco de lesão nervosa no glúteo e menor massa no deltoide.", b: "Intramuscular na região ventro-glútea (Hochstetter), independentemente da idade.", c: "Subcutânea na região do deltoide, para facilitar a absorção lenta do antígeno.", d: "Intradérmica no antebraço esquerdo, similar à técnica de sensibilidade."}, correct: "a" },
+            { id: 8, tag: "Hep B", text: "Em relação aos grupos vulneráveis, qual a especificidade do esquema de vacinação contra Hepatite B para pacientes renais crônicos em hemodiálise?", options: {a: "Não há alteração, segue o esquema 0-1-6 meses com dose padrão.", b: "Devem receber esquema de 4 doses (0, 1, 2 e 6 meses) com o dobro do volume da dose habitual para adultos.", c: "A vacina é contraindicada devido à baixa imunidade destes pacientes.", d: "Devem receber dose única anual de reforço."}, correct: "b" },
+            { id: 9, tag: "Hep A", text: "A Vacina Hepatite A (inativada) faz parte do calendário infantil. Qual é a idade recomendada para a dose única e o prazo limite para administração na rotina (caso a criança perca a data ideal)?", options: {a: "Recomendada aos 12 meses; disponível até 1 ano, 11 meses e 29 dias.", b: "Recomendada aos 15 meses; disponível até 4 anos, 11 meses e 29 dias.", c: "Recomendada aos 2 anos; disponível sem limite de idade.", d: "Recomendada aos 6 meses; disponível até completar 1 ano."}, correct: "b" },
+            { id: 10, tag: "Hep A", text: "Sobre a conservação e administração da vacina Hepatite A, assinale a alternativa que contém as informações técnicas corretas:", options: {a: "Conservar entre +2°C e +8°C; administração via intramuscular, preferencialmente no deltoide (em maiores de 2 anos) ou vasto lateral (menores de 2 anos).", b: "Conservar congelada (-20°C); administração via oral (gotinhas).", c: "Conservar entre +2°C e +8°C; administração via subcutânea obrigatória.", d: "Pode ser mantida em temperatura ambiente por até 24 horas; administração intradérmica."}, correct: "a" },
+            { id: 11, tag: "Hep A", text: "Um paciente adulto portador de coagulopatia (hemofilia) necessita da vacina Hepatite A. Qual é a via de administração recomendada para evitar hematomas graves, segundo o Manual dos CRIE?", options: {a: "Intramuscular profunda.", b: "Intravenosa lenta.", c: "Subcutânea.", d: "Intradérmica."}, correct: "c" },
+            { id: 12, tag: "Hep A", text: "A vacina contra Hepatite A é produzida a partir de:", options: {a: "Vírus vivo atenuado, contraindicada para imunodeprimidos.", b: "Vírus inativado (morto), sendo segura para pacientes imunossuprimidos.", c: "Bactéria inativada e toxoide tetânico.", d: "Polissacarídeo capsular conjugado."}, correct: "b" },
+            { id: 13, tag: "VIP/VOP", text: "Considerando a atualização do calendário vacinal brasileiro e a erradicação da pólio, qual é o esquema primário (1º ano de vida) para a prevenção da poliomielite?", options: {a: "3 doses de VOP (oral) aos 2, 4 e 6 meses.", b: "3 doses de VIP (injetável/inativada) aos 2, 4 e 6 meses.", c: "1 dose de VIP aos 2 meses e 2 doses de VOP aos 4 e 6 meses.", d: "Dose única de VIP ao nascer e reforços com VOP."}, correct: "b" },
+            { id: 14, tag: "VIP/VOP", text: "Uma criança imunodeprimida (ex: HIV positivo ou em quimioterapia) e seus contatos domiciliares devem receber qual tipo de vacina contra a poliomielite e por quê?", options: {a: "VOP (Sabin), para garantir imunidade de rebanho intestinal.", b: "VIP (Salk), pois é constituída de vírus inativado, eliminando o risco de poliomielite vacinal.", c: "Não devem ser vacinados contra pólio devido ao risco de reversão viral.", d: "VOP em dose fracionada para reduzir a carga viral."}, correct: "b" },
+            { id: 15, tag: "VIP/VOP", text: "Durante a administração da VOP (Vacina Oral Poliomielite), a criança cospe imediatamente após receber as gotas. Qual a conduta correta do técnico de enfermagem?", options: {a: "Considerar a dose como válida, pois a absorção na mucosa é imediata.", b: "Administrar mais uma dose imediatamente (redose). Se cuspir novamente, não administrar mais e agendar retorno.", c: "Aguardar 30 minutos e administrar nova dose.", d: "Substituir imediatamente pela vacina injetável (VIP)."}, correct: "b" },
+            { id: 16, tag: "VIP/VOP", text: "Sobre as vias de administração das vacinas contra poliomielite, assinale a correlação correta:", options: {a: "VIP: Intramuscular | VOP: Oral.", b: "VIP: Subcutânea | VOP: Intramuscular.", c: "VIP: Intradérmica | VOP: Oral.", d: "VIP: Oral | VOP: Subcutânea."}, correct: "a" },
+            { id: 17, tag: "Penta", text: "A vacina Pentavalente combina proteção contra cinco doenças. Quais são os componentes exatos desta vacina?", options: {a: "Difteria, Tétano, Coqueluche, Hepatite A e Pólio.", b: "Difteria, Tétano, Coqueluche (celular), Hepatite B e Haemophilus influenzae tipo b.", c: "Sarampo, Caxumba, Rubéola, Varicela e Febre Amarela.", d: "Difteria, Tétano, Coqueluche (acelular), Meningococo C e Pneumococo 10."}, correct: "b" },
+            { id: 18, tag: "Penta", text: "Um lactente apresentou Episódio Hipotônico-Hiporresponsivo (EHH) 12 horas após receber a primeira dose da vacina Pentavalente. Qual a conduta para a continuidade do esquema vacinal deste paciente?", options: {a: "Continuar o esquema com a Pentavalente normalmente, sob supervisão hospitalar.", b: "Suspender qualquer vacina que contenha o componente Pertussis.", c: "Substituir a Pentavalente pela DTPa (acelular) e Hepatite B + Hib isoladas nas próximas doses.", d: "Administrar apenas vacina dupla (DT) infantil, removendo o componente Pertussis."}, correct: "c" },
+            { id: 19, tag: "Penta", text: "Qual é a via de administração, local de aplicação e dosagem padrão da vacina Pentavalente para um lactente de 2 meses?", options: {a: "Via subcutânea, região do deltoide, 1.0 ml.", b: "Via intramuscular profunda, vasto lateral da coxa, 0.5 ml.", c: "Via intramuscular, região ventro-glútea, 1.0 ml.", d: "Via intradérmica, antebraço, 0.1 ml."}, correct: "b" },
+            { id: 20, tag: "Penta", text: "A vacina Pentavalente contém o componente pertussis de células inteiras. Qual reação adversa sistêmica comum pode ocorrer devido a este componente e como deve ser manejada?", options: {a: "Febre alta (>39°C) e choro persistente. Manejo com antitérmicos e compressas frias; se convulsão, alterar esquema.", b: "Paralisia flácida aguda. Notificação imediata e internação.", c: "Rash cutâneo generalizado. Administração de anti-histamínicos.", d: "Úlcera necrótica no local. Drenagem cirúrgica."}, correct: "a" },
+            { id: 21, tag: "DTP", text: "A vacina DTP (Tríplice Bacteriana Infantil) é indicada no calendário do PNI exclusivamente para:", options: {a: "Iniciar o esquema básico aos 2, 4 e 6 meses.", b: "Reforços aos 15 meses e aos 4 anos de idade.", c: "Vacinação de gestantes a partir da 20ª semana.", d: "Vacinação de idosos contra tétano."}, correct: "b" },
+            { id: 22, tag: "DTP", text: "Uma criança de 7 anos e 2 meses comparece à sala de vacinas sem nenhum reforço de DTP. Qual vacina deve ser administrada neste caso, considerando a idade limite?", options: {a: "Administrar DTP normalmente, pois a proteção é prioritária.", b: "Administrar vacina Pentavalente.", c: "Administrar vacina dT (Dupla tipo adulto) e vacina contra Hepatite B, pois a DTP é contraindicada a partir de 7 anos.", d: "Administrar vacina dTpa (acelular) obrigatoriamente."}, correct: "c" },
+            { id: 23, tag: "DTP", text: "A vacina DTP é administrada via intramuscular. Em crianças de 4 anos, qual é o local de aplicação preferencial, considerando o desenvolvimento muscular?", options: {a: "Vasto lateral da coxa obrigatoriamente.", b: "Músculo deltoide, desde que haja massa muscular adequada.", c: "Região glútea (quadrante superior externo).", d: "Via subcutânea no tríceps."}, correct: "b" },
+            { id: 24, tag: "DTP", text: "Qual a principal diferença entre a vacina DTP (usada na rede pública infantil) e a DTPa (acelular)?", options: {a: "A DTPa é menos eficaz na produção de anticorpos.", b: "A DTP contém células inteiras da bactéria da coqueluche, sendo mais reatogênica (mais reações adversas); a DTPa contém frações da bactéria, causando menos reações.", c: "A DTP é líquida e a DTPa é em pó liofilizado.", d: "Não há diferença, apenas o laboratório produtor."}, correct: "b" },
+            { id: 25, tag: "dT", text: "Um trabalhador da construção civil apresenta um ferimento perfurante sujo com prego enferrujado. Ele relata ter tomado a última dose da vacina antitetânica (dT) há 8 anos. Qual é a conduta profilática correta?", options: {a: "Não vacinar, pois a validade é de 10 anos.", b: "Administrar uma dose de reforço da vacina dT (pois o ferimento é de alto risco e a vacina tem > 5 anos) + Soro Antitetânico (ou IGAT) dependendo da avaliação médica.", c: "Reiniciar o esquema completo de 3 doses (0, 2, 6 meses).", d: "Apenas lavar o local com água e sabão."}, correct: "b" },
+            { id: 26, tag: "dT", text: "Uma gestante na 22ª semana de gestação chega à unidade com esquema vacinal de dT completo (3 doses), sendo a última há 3 anos. Qual a conduta recomendada pelo PNI para proteção do recém-nascido contra coqueluche?", options: {a: "Não administrar nenhuma vacina, pois o esquema está em dia.", b: "Administrar uma dose de reforço com dT (dupla adulto).", c: "Administrar uma dose da vacina dTpa (Tríplice Bacteriana Acelular do tipo adulto), para transferir anticorpos contra coqueluche ao feto.", d: "Administrar vacina DTP infantil."}, correct: "c" },
+            { id: 27, tag: "dT", text: "Um adulto perdeu o cartão de vacina e não sabe informar se já tomou vacina contra tétano. Qual o esquema a ser iniciado?", options: {a: "Dose única de reforço.", b: "Esquema completo com 3 doses de dT (0, 2 e 6 meses).", c: "Duas doses de dTpa.", d: "Coletar sorologia antes de vacinar."}, correct: "b" },
+            { id: 28, tag: "dT", text: "O que significa o 'd' minúsculo na sigla da vacina dT ou dTpa?", options: {a: "Que a dose deve ser diluída.", b: "Que contém uma quantidade menor de toxoide diftérico em relação à vacina infantil (DTP), para reduzir reações de hipersensibilidade em adultos.", c: "Que a vacina é de vírus 'diminuído'.", d: "Que a vacina protege apenas contra difteria, e não tétano."}, correct: "b" },
+            { id: 29, tag: "Febre Amarela", text: "A vacina contra Febre Amarela é constituída de vírus vivo atenuado. Uma mulher amamentando um bebê de 4 meses precisa viajar para uma área endêmica e deseja se vacinar. Qual a orientação correta conforme o PNI?", options: {a: "Pode vacinar sem restrições, pois o vírus não passa pelo leite.", b: "A vacinação é contraindicada preferencialmente; se o risco epidemiológico justificar a vacinação, ela deve suspender o aleitamento materno por 10 dias após a dose.", c: "Deve vacinar e utilizar máscara N95 ao amamentar.", d: "Deve desmamar a criança definitivamente antes de receber a vacina."}, correct: "b" },
+            { id: 30, tag: "Febre Amarela", text: "Para um viajante internacional que nunca foi vacinado, com quanto tempo de antecedência mínima ele deve receber a vacina de Febre Amarela para que seja considerada válida e protetora na data da viagem?", options: {a: "No dia do embarque.", b: "Pelo menos 10 dias antes da viagem.", c: "30 dias antes da viagem.", d: "24 horas antes da viagem."}, correct: "b" },
+            { id: 31, tag: "Febre Amarela", text: "Qual das condições abaixo configura uma contraindicação absoluta (ou precaução que exige avaliação médica rigorosa) para a vacina de Febre Amarela?", options: {a: "História de reação anafilática confirmada a ovo de galinha e imunossupressão grave.", b: "Resfriado comum sem febre.", c: "História familiar de alergia.", d: "Uso de antibióticos para infecção urinária."}, correct: "a" },
+            { id: 32, tag: "Febre Amarela", text: "Qual a via de administração e a dosagem padrão (dose plena) da vacina Febre Amarela na rotina?", options: {a: "Intramuscular, 1.0 ml.", b: "Subcutânea, 0.5 ml.", c: "Intradérmica, 0.1 ml.", d: "Oral, 2 gotas."}, correct: "b" }
+        ],
+
+        // --- MATÉRIA 3: SAÚDE COLETIVA (DOENÇAS TRANSMISSÍVEIS) ---
+        doencas: [
+            { id: 1, tag: "Rubéola", text: "A rubéola é uma doença exantemática viral aguda. Embora geralmente benigna, sua maior importância em saúde pública deve-se ao risco de:", options: {a: "Evolução para choque séptico viral.", b: "Síndrome da Rubéola Congênita (SRC), causando malformações graves no feto (cegueira, surdez, cardiopatias).", c: "Comprometimento hepático fulminante.", d: "Paralisia flácida aguda permanente."}, correct: "b" },
+            { id: 2, tag: "Rubéola", text: "Um sinal clínico característico que frequentemente precede o exantema na rubéola é:", options: {a: "Manchas de Koplik na mucosa oral.", b: "Linfadenopatia retroauricular, occipital e cervical posterior.", c: "Edema de parótida unilateral.", d: "Pseudomembrana acinzentada na orofaringe."}, correct: "b" },
+            { id: 3, tag: "Rubéola", text: "Sobre o isolamento de um paciente hospitalizado com suspeita ou confirmação de rubéola, qual a precaução indicada?", options: {a: "Precaução Padrão apenas.", b: "Precaução para Aerossóis (quarto privativo e máscara N95).", c: "Precaução para Gotículas (máscara cirúrgica) até 7 dias após o início do exantema.", d: "Precaução de Contato estrito."}, correct: "c" },
+            { id: 4, tag: "Rubéola", text: "A notificação de casos suspeitos de rubéola é:", options: {a: "Compulsória e imediata, visando a coleta de sorologia e bloqueio vacinal.", b: "Semanal, apenas para fins estatísticos.", c: "Desnecessária, pois a doença está erradicada.", d: "Realizada apenas se houver óbito."}, correct: "a" },
+            { id: 5, tag: "Sarampo", text: "O sarampo é uma doença de alta transmissibilidade. Qual é o tipo de precaução exigida em ambiente hospitalar para casos suspeitos?", options: {a: "Precaução para Gotículas (máscara cirúrgica).", b: "Precaução para Aerossóis (máscara N95/PFF2 para profissionais e quarto com pressão negativa, se possível).", c: "Precaução de Contato.", d: "Apenas higienização das mãos."}, correct: "b" },
+            { id: 6, tag: "Sarampo", text: "Qual é o sinal enantemático considerado patognomônico do sarampo, que surge na mucosa oral antes do exantema?", options: {a: "Língua em framboesa.", b: "Placas de pus nas amígdalas.", c: "Manchas de Koplik (pequenos pontos brancos com halo avermelhado).", d: "Úlceras aftosas recorrentes."}, correct: "c" },
+            { id: 7, tag: "Sarampo", text: "Como medida de redução da morbimortalidade e prevenção de complicações oculares no sarampo, o Ministério da Saúde recomenda a administração de:", options: {a: "Vitamina A em duas doses (no diagnóstico e 24h depois).", b: "Antibiótico profilático de largo espectro.", c: "Corticosteroides em dose imunossupressora.", d: "Antivirais específicos (Aciclovir)."}, correct: "a" },
+            { id: 8, tag: "Sarampo", text: "Diante de um caso suspeito de sarampo em uma creche, qual é a medida de bloqueio recomendada para contatos não vacinados imunocompetentes?", options: {a: "Vacinação de bloqueio preferencialmente em até 72 horas após a exposição.", b: "Uso de imunoglobulina para todos os contatos.", c: "Fechamento da creche por 30 dias sem outras medidas.", d: "Apenas observação clínica dos sintomas."}, correct: "a" },
+            { id: 9, tag: "Difteria", text: "A difteria respiratória caracteriza-se clinicamente pela presença de:", options: {a: "Tosse produtiva com hemoptise.", b: "Pseudomembranas acinzentadas/aderentes nas amígdalas, faringe ou laringe, que sangram ao tentar removê-las.", c: "Exantema maculopapular generalizado.", d: "Rigidez de nuca e vômitos em jato."}, correct: "b" },
+            { id: 10, tag: "Difteria", text: "A conduta terapêutica imediata e prioritária diante de uma forte suspeita clínica de difteria, antes mesmo da confirmação laboratorial, é:", options: {a: "Administração do Soro Antidiftérico (SAD) para neutralizar a toxina circulante.", b: "Traqueostomia de urgência.", c: "Aguardar a cultura de orofaringe.", d: "Uso isolado de Penicilina Benzatina."}, correct: "a" },
+            { id: 11, tag: "Difteria", text: "Qual o tipo de isolamento indicado para um paciente internado com difteria faríngea?", options: {a: "Precaução para Aerossóis.", b: "Precaução para Gotículas (até 48h de antibioticoterapia eficaz ou cultura negativa).", c: "Não há necessidade de isolamento.", d: "Precaução de Contato apenas."}, correct: "b" },
+            { id: 12, tag: "Difteria", text: "A difteria cutânea manifesta-se geralmente por:", options: {a: "Lesões ulceradas com bordas elevadas e fundo necrótico ou pseudomembranoso.", b: "Rash alérgico pruriginoso.", c: "Vesículas com líquido claro.", d: "Petéquias disseminadas."}, correct: "a" },
+            { id: 13, tag: "Coqueluche", text: "A fase paroxística da coqueluche é caracterizada por:", options: {a: "Febre alta contínua.", b: "Acessos de tosse súbitos e incontroláveis, seguidos de inspiração profunda com ruído característico (guincho) e, por vezes, vômitos pós-tosse.", c: "Coriza leve e mal-estar apenas.", d: "Diarreia e desidratação."}, correct: "b" },
+            { id: 14, tag: "Coqueluche", text: "No hemograma de um paciente com coqueluche, um achado laboratorial muito sugestivo é:", options: {a: "Leucocitose intensa com linfocitose absoluta.", b: "Leucopenia com neutropenia.", c: "Trombocitopenia grave.", d: "Eosinofilia marcada."}, correct: "a" },
+            { id: 15, tag: "Coqueluche", text: "O tratamento antibiótico de escolha para a coqueluche e para a quimioprofilaxia de contatos é:", options: {a: "Amoxicilina.", b: "Macrolídeos (Azitromicina, Claritromicina ou Eritromicina).", c: "Cefalosporinas de 3ª geração.", d: "Vancomicina."}, correct: "b" },
+            { id: 16, tag: "Coqueluche", text: "Para proteger o recém-nascido contra a coqueluche nos primeiros meses de vida, recomenda-se a vacinação da gestante com:", options: {a: "DTP células inteiras.", b: "dT (Dupla Adulto) apenas.", c: "dTpa (Tríplice Bacteriana Acelular do tipo adulto) a partir da 20ª semana.", d: "BCG."}, correct: "c" },
+            { id: 17, tag: "Hanseníase", text: "O sinal cardinal (principal) para o diagnóstico clínico da hanseníase é:", options: {a: "Prurido intenso nas lesões de pele.", b: "Lesão de pele (mancha hipocrômica ou avermelhada) com alteração ou perda de sensibilidade (térmica, dolorosa e/ou tátil).", c: "Descamação intensa da pele.", d: "Febre noturna persistente."}, correct: "b" },
+            { id: 18, tag: "Hanseníase", text: "Para fins de tratamento (PQT), a hanseníase é classificada operacionalmente em:", options: {a: "Aguda e Crônica.", b: "Paucibacilar (até 5 lesões de pele) e Multibacilar (mais de 5 lesões).", c: "Benigna e Maligna.", d: "Interna e Externa."}, correct: "b" },
+            { id: 19, tag: "Hanseníase", text: "O tratamento da Hanseníase Multibacilar (MB) com a Poliquimioterapia Única (PQT-U) tem duração padrão de:", options: {a: "6 cartelas (6 meses).", b: "12 cartelas (12 meses).", c: "Dose única supervisionada.", d: "Uso contínuo por toda a vida."}, correct: "b" },
+            { id: 20, tag: "Hanseníase", text: "Qual a conduta recomendada em relação à vacina BCG para os contatos intradomiciliares de um caso novo de hanseníase, sem cicatriz de BCG e sem sinais da doença?", options: {a: "Administrar uma dose de BCG.", b: "Administrar duas doses de BCG.", c: "A BCG é contraindicada para contatos.", d: "Iniciar tratamento com PQT profilática."}, correct: "a" },
+            { id: 21, tag: "Tuberculose", text: "Define-se como Sintomático Respiratório, prioritário para busca ativa de tuberculose pulmonar:", options: {a: "Qualquer pessoa com tosse por 3 semanas ou mais.", b: "Pessoa com tosse há 2 dias.", c: "Pessoa com dispneia sem tosse.", d: "Apenas pessoas com hemoptise."}, correct: "a" },
+            { id: 22, tag: "Tuberculose", text: "O esquema básico de tratamento da tuberculose em adultos e adolescentes no Brasil (fase intensiva) é composto por quais fármacos?", options: {a: "Rifampicina e Isoniazida apenas.", b: "Rifampicina, Isoniazida, Pirazinamida e Etambutol (RIPE).", c: "Penicilina e Gentamicina.", d: "Azitromicina isolada."}, correct: "b" },
+            { id: 23, tag: "Tuberculose", text: "Para o diagnóstico rápido e detecção de resistência à rifampicina, o método laboratorial priorizado atualmente pelo Ministério da Saúde é:", options: {a: "Raio-X de tórax apenas.", b: "Teste Rápido Molecular para Tuberculose (TRM-TB).", c: "Hemograma completo.", d: "Tomografia computadorizada."}, correct: "b" },
+            { id: 24, tag: "Tuberculose", text: "A estratégia DOTS (Tratamento Diretamente Observado) consiste em:", options: {a: "Internar o paciente por 6 meses.", b: "Entregar a medicação para o paciente tomar sozinho em casa.", c: "Supervisão da tomada da medicação por um profissional de saúde ou pessoa capacitada, garantindo a adesão.", d: "Tratamento apenas quando o paciente sentir sintomas."}, correct: "c" },
+            { id: 25, tag: "Meningite", text: "No exame físico de um paciente com suspeita de meningite, quais são os sinais de irritação meníngea clássicos?", options: {a: "Sinal de Murphy e Blumberg.", b: "Rigidez de nuca, Sinal de Kernig e Sinal de Brudzinski.", c: "Sinal de Babinski e Clonus.", d: "Sinal de Giordano positivo."}, correct: "b" },
+            { id: 26, tag: "Meningite", text: "Diante de um caso confirmado de Doença Meningocócica (Neisseria meningitidis), qual é a quimioprofilaxia indicada para os contatos íntimos/domiciliares?", options: {a: "Vacinação imediata apenas.", b: "Rifampicina via oral (geralmente por 2 dias).", c: "Isolamento social por 14 dias.", d: "Uso de máscaras N95 por 1 mês."}, correct: "b" },
+            { id: 27, tag: "Meningite", text: "A presença de petéquias e sufusões hemorrágicas na pele (púrpura) em um paciente febril com cefaleia sugere gravemente:", options: {a: "Meningite viral benigna.", b: "Meningococcemia (Doença Meningocócica).", c: "Meningite tuberculosa.", d: "Cefaleia tensional."}, correct: "b" },
+            { id: 28, tag: "Meningite", text: "O exame 'padrão-ouro' para o diagnóstico de meningite, que permite analisar as características do líquor (LCR), é:", options: {a: "Hemocultura.", b: "Punção lombar.", c: "Ressonância Magnética.", d: "Eletroencefalograma."}, correct: "b" },
+            { id: 29, tag: "Hepatite", text: "Sobre a transmissão da Hepatite A, é correto afirmar que ocorre predominantemente por via:", options: {a: "Parenteral (sangue).", b: "Sexual.", c: "Fecal-oral (água e alimentos contaminados).", d: "Vertical (mãe para filho) no parto."}, correct: "c" },
+            { id: 30, tag: "Hepatite", text: "Na interpretação da sorologia da Hepatite B, um profissional de saúde que apresenta Anti-HBs reagente (positivo) e HBsAg não reagente (negativo) é considerado:", options: {a: "Portador crônico da doença.", b: "Imune (protegido) devido à vacinação ou infecção curada.", c: "Suscetível (precisa vacinar).", d: "Em fase aguda da doença."}, correct: "b" },
+            { id: 31, tag: "Hepatite", text: "A Hepatite C caracteriza-se principalmente por:", options: {a: "Ser uma infecção aguda autolimitada na maioria dos casos.", b: "Alto risco de cronificação, podendo evoluir para cirrose e hepatocarcinoma, com transmissão via sangue/parenteral.", c: "Ter vacina disponível no SUS para toda a população.", d: "Ser transmitida por alimentos crus."}, correct: "b" },
+            { id: 32, tag: "Hepatite", text: "Em caso de acidente com material biológico (perfurocortante) envolvendo paciente fonte desconhecido ou HBsAg positivo, em profissional não vacinado, a conduta inclui:", options: {a: "Lavar com água e sabão apenas.", b: "Iniciar esquema vacinal e administrar Imunoglobulina Humana Anti-Hepatite B (IGHAHB).", c: "Aguardar sintomas aparecerem.", d: "Tomar antibióticos profiláticos."}, correct: "b" },
+            { id: 33, tag: "Raiva", text: "A raiva humana é uma encefalite viral aguda. Uma vez iniciados os sintomas clínicos (hidrofobia, agitação), a letalidade da doença é de aproximadamente:", options: {a: "10% se tratada a tempo.", b: "50%.", c: "Próxima de 100% (quase invariavelmente fatal).", d: "Baixa, sendo autolimitada."}, correct: "c" },
+            { id: 34, tag: "Raiva", text: "Paciente sofreu mordedura grave (profunda/múltipla) nas mãos por um cão desconhecido que fugiu logo após o ataque. Qual a conduta profilática adequada?", options: {a: "Lavar com água e sabão e observar o paciente em casa.", b: "Apenas vacina antirrábica (esquema de pré-exposição).", c: "Lavagem exaustiva do ferimento + Soro Antirrábico (SAR) ou Imunoglobulina + Vacinação (esquema completo).", d: "Suturar imediatamente o ferimento sem vacinar."}, correct: "c" },
+            { id: 35, tag: "Raiva", text: "Se o animal agressor (cão ou gato) for passível de observação e estiver saudável no momento do acidente, a conduta inicial recomenda observá-lo por:", options: {a: "24 horas.", b: "10 dias.", c: "30 dias.", d: "60 dias."}, correct: "b" },
+            { id: 36, tag: "Raiva", text: "Acidentes com morcegos (mordedura, arranhadura ou contato direto) são sempre classificados como:", options: {a: "Acidentes leves, lavar apenas.", b: "Risco leve, observar o morcego.", c: "Acidentes graves, exigindo soro + vacina, independentemente da lesão.", d: "Risco moderado, apenas vacina."}, correct: "c" },
+            { id: 37, tag: "Febre Amarela", text: "A forma grave da Febre Amarela caracteriza-se pela tríade:", options: {a: "Tosse, coriza e febre.", b: "Icterícia, hemorragias (ex: vômitos 'borra de café') e oligúria/insuficiência renal (fase tóxica).", c: "Paralisia, cegueira e surdez.", d: "Exantema, prurido e descamação."}, correct: "b" },
+            { id: 38, tag: "Febre Amarela", text: "A transmissão da Febre Amarela Silvestre envolve quais vetores (mosquitos)?", options: {a: "Aedes aegypti apenas.", b: "Gêneros Haemagogus e Sabethes.", c: "Anopheles.", d: "Culex."}, correct: "b" },
+            { id: 39, tag: "Febre Amarela", text: "Por ser uma vacina de vírus vivo atenuado, a vacina da Febre Amarela deve ser evitada ou avaliada com cautela em:", options: {a: "Jovens saudáveis.", b: "Imunodeprimidos graves, gestantes e pessoas com anafilaxia a ovo.", c: "Pessoas que comem carne vermelha.", d: "Diabéticos controlados."}, correct: "b" },
+            { id: 40, tag: "Febre Amarela", text: "O ciclo urbano da Febre Amarela, erradicado no Brasil desde 1942, tem como vetor potencial o:", options: {a: "Haemagogus.", b: "Aedes aegypti.", c: "Lutzomyia.", d: "Barbeiro."}, correct: "b" },
+            { id: 41, tag: "Caxumba", text: "A manifestação clínica mais comum da caxumba (parotidite epidêmica) é:", options: {a: "Aumento do volume das glândulas salivares (parótidas), uni ou bilateral.", b: "Tosse produtiva.", c: "Manchas vermelhas no corpo.", d: "Diarreia líquida."}, correct: "a" },
+            { id: 42, tag: "Caxumba", text: "Uma complicação importante da caxumba em homens pós-púberes, que pode levar à hipofunção testicular (raramente esterilidade), é:", options: {a: "Prostatite.", b: "Orquite/Orquiepididimite.", c: "Cistite.", d: "Balanite."}, correct: "b" },
+            { id: 43, tag: "Caxumba", text: "A prevenção da caxumba é realizada através da vacina:", options: {a: "BCG.", b: "Tríplice Viral (Sarampo, Caxumba e Rubéola) ou Tetraviral.", c: "Sabin.", d: "Pentavalente."}, correct: "b" },
+            { id: 44, tag: "Caxumba", text: "Em casos de meningite por caxumba (meningite urliana), o líquor apresenta características de:", options: {a: "Meningite bacteriana purulenta.", b: "Meningite viral (asséptica), com aumento de linfócitos.", c: "Líquor hemorrágico.", d: "Normalidade absoluta."}, correct: "b" },
+            { id: 45, tag: "Tétano", text: "O tétano não é uma doença contagiosa (não passa de pessoa para pessoa). Sua patogenia ocorre pela ação da toxina (tetanospasmina) que atinge o:", options: {a: "Sistema digestivo.", b: "Sistema Nervoso Central, causando hiperexcitabilidade e espasmos musculares.", c: "Fígado.", d: "Pulmão."}, correct: "b" },
+            { id: 46, tag: "Tétano", text: "Sinais clínicos clássicos do tétano acidental incluem:", options: {a: "Trismo (dificuldade de abrir a boca), riso sardônico e opistótono (contratura arqueada).", b: "Paralisia flácida das pernas.", c: "Manchas na pele e febre alta.", d: "Vômitos e diarreia."}, correct: "a" },
+            { id: 47, tag: "Tétano", text: "A principal forma de prevenir o tétano neonatal (Mal de Sete Dias) é:", options: {a: "Aplicar pomadas antibióticas no umbigo.", b: "Vacinação adequada da gestante (com dT ou dTpa) e higiene no corte do cordão umbilical.", c: "Isolar o recém-nascido.", d: "Dar banho imediato no bebê."}, correct: "b" },
+            { id: 48, tag: "Tétano", text: "O tratamento de um paciente com tétano acidental manifesto exige internação (preferencialmente em UTI), sedação, controle de espasmos e o uso de:", options: {a: "Apenas antibióticos orais.", b: "Imunoglobulina Humana Antitetânica (IGHAT) ou Soro Antitetânico (SAT) para neutralizar a toxina não fixada.", c: "Vacina viral.", d: "Vitamina K."}, correct: "b" }
+        ],
+
+        // --- ESPAÇO PARA AS NOVAS MATÉRIAS ---
+        psicologia: [],
+        ambiental: [],
+        organizacional: []
+    };
+
+    /* ==============================================================
+       LÓGICA DO SISTEMA 
+       ============================================================== */
+    
+    let materiaAtual = '';
+    let respostasUsuario = {};
+
+    // Atualiza botões do menu com base no conteúdo
+    function verificarConteudo() {
+        if(bancoDeQuestoes.psicologia.length > 0) document.getElementById('btn-psicologia').classList.remove('disabled');
+        if(bancoDeQuestoes.ambiental.length > 0) document.getElementById('btn-ambiental').classList.remove('disabled');
+        if(bancoDeQuestoes.organizacional.length > 0) document.getElementById('btn-organizacional').classList.remove('disabled');
+    }
+
+    function mostrarTela(idTela) {
+        document.querySelectorAll('.screen').forEach(tela => tela.classList.remove('active'));
+        document.getElementById(idTela).classList.add('active');
+        window.scrollTo(0,0);
+    }
+
+    function iniciarQuiz(materia) {
+        materiaAtual = materia;
+        respostasUsuario = {};
+        
+        // Definir título
+        const titulos = {
+            'relacoes': 'Relações Humanas',
+            'coletiva': 'Saúde Coletiva (Vacinas)',
+            'doencas': 'Saúde Coletiva (Doenças)',
+            'psicologia': 'Psicologia',
+            'ambiental': 'Saúde Ambiental',
+            'organizacional': 'Processos Organizacionais'
+        };
+        document.getElementById('quiz-title').innerText = titulos[materia];
+
+        // Renderizar questões
+        const container = document.getElementById('questions-container');
+        container.innerHTML = '';
+
+        const questoes = bancoDeQuestoes[materia];
+
+        if (!questoes || questoes.length === 0) {
+            alert("Questões ainda não disponíveis para esta matéria.");
+            return;
+        }
+
+        questoes.forEach((q, index) => {
+            const tagHtml = q.tag ? `<span class="badge">${q.tag}</span>` : '';
+            
+            const div = document.createElement('div');
+            div.className = 'question-block';
+            div.innerHTML = `
+                <div class="question-title">${tagHtml}${index + 1}. ${q.text}</div>
+                <div>
+                    <button class="option-btn" onclick="selecionarOpcao(${index}, 'a', this)">A) ${q.options.a}</button>
+                    <button class="option-btn" onclick="selecionarOpcao(${index}, 'b', this)">B) ${q.options.b}</button>
+                    <button class="option-btn" onclick="selecionarOpcao(${index}, 'c', this)">C) ${q.options.c}</button>
+                    <button class="option-btn" onclick="selecionarOpcao(${index}, 'd', this)">D) ${q.options.d}</button>
+                </div>
+            `;
+            container.appendChild(div);
         });
 
-        function submitQuiz() {
-            let acertos = 0;
-            let respondidas = 0;
-            let resultadoHTML = '';
+        mostrarTela('quiz-screen');
+    }
 
-            // Verificar se todas as questões foram respondidas
-            for (let i = 1; i <= 30; i++) {
-                const resposta = document.querySelector(`input[name="q${i}"]:checked`);
-                if (resposta) {
-                    respondidas++;
-                }
-            }
+    function selecionarOpcao(indexQuestao, opcao, btnElement) {
+        // Salva resposta
+        respostasUsuario[indexQuestao] = opcao;
 
-            if (respondidas < 30) {
-                alert(`Você respondeu ${respondidas} de 30 questões. Por favor, responda todas as questões antes de finalizar.`);
-                return;
-            }
+        // Visual
+        const parent = btnElement.parentElement;
+        const botoes = parent.querySelectorAll('.option-btn');
+        botoes.forEach(btn => btn.classList.remove('selected'));
+        btnElement.classList.add('selected');
+    }
 
-            // Calcular resultados
-            for (let i = 1; i <= 30; i++) {
-                const resposta = document.querySelector(`input[name="q${i}"]:checked`);
-                const respostaUsuario = resposta ? resposta.value : 'Não respondida';
-                const respostaCorreta = gabarito[`q${i}`];
-                const acertou = respostaUsuario === respostaCorreta;
+    function calcularResultados() {
+        const questoes = bancoDeQuestoes[materiaAtual];
+        const total = questoes.length;
+        let acertos = 0;
+        let respondidas = Object.keys(respostasUsuario).length;
 
-                if (acertou) acertos++;
-
-                const classe = acertou ? 'correto' : 'incorreto';
-                const status = acertou ? '✓ Correto' : '✗ Incorreto';
-
-                resultadoHTML += `
-                    <div class="gabarito-item ${classe}">
-                        <strong>Questão ${i}</strong> - ${questoes[`q${i}`]}<br>
-                        <span class="sua-resposta">Sua resposta: ${respostaUsuario}</span> ${status}<br>
-                        ${!acertou ? `<strong>Resposta correta: ${respostaCorreta}</strong>` : ''}
-                    </div>
-                `;
-            }
-
-            const porcentagem = ((acertos / 30) * 100).toFixed(1);
-            const aprovado = porcentagem >= 70;
-
-            document.getElementById('scoreDisplay').innerHTML = `
-                <div>Você acertou <strong>${acertos}</strong> de <strong>30</strong> questões</div>
-                <div style="font-size: 32px; margin: 10px 0;">${porcentagem}%</div>
-                <div>${aprovado ? '✓ Aprovado' : '✗ Reprovado'} (Mínimo: 70%)</div>
-            `;
-            
-            document.getElementById('scoreDisplay').className = `score ${aprovado ? 'aprovado' : 'reprovado'}`;
-            document.getElementById('gabarito').innerHTML = resultadoHTML;
-
-            // Mostrar resultado e esconder formulário
-            document.getElementById('quizForm').style.display = 'none';
-            document.getElementById('resultado').style.display = 'block';
-
-            // Scroll para o topo
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+        if (respondidas < total) {
+            if(!confirm(`Você respondeu ${respondidas} de ${total} questões. Deseja finalizar mesmo assim?`)) return;
         }
-    </script>
+
+        const container = document.getElementById('detailed-results');
+        container.innerHTML = '';
+
+        questoes.forEach((q, index) => {
+            const respUser = respostasUsuario[index];
+            const correta = q.correct;
+            const acertou = respUser === correta;
+
+            if (acertou) acertos++;
+
+            const div = document.createElement('div');
+            div.className = `result-card ${acertou ? 'correct' : 'wrong'}`;
+            
+            let status = acertou 
+                ? `<span class="status-correct">✔ Correto</span>` 
+                : `<span class="status-wrong">✖ Incorreto (Sua resposta: ${respUser ? respUser.toUpperCase() : 'Nenhuma'})</span>`;
+
+            div.innerHTML = `
+                <div><strong>${index + 1}.</strong> ${q.text}</div>
+                <div style="margin-top:5px;">${status}</div>
+                ${!acertou ? `<div class="explanation"><strong>Gabarito: ${correta.toUpperCase()}</strong> - ${q.options[correta]}</div>` : ''}
+            `;
+            container.appendChild(div);
+        });
+
+        const porcentagem = Math.round((acertos / total) * 100);
+        document.getElementById('final-score').innerHTML = `
+            Nota: ${porcentagem}%<br>
+            <span style="font-size:0.7em; color:#555">Acertos: ${acertos} de ${total}</span>
+        `;
+
+        mostrarTela('result-screen');
+    }
+
+    function voltarAoMenu() {
+        mostrarTela('menu-screen');
+    }
+
+    // Inicialização
+    verificarConteudo();
+
+</script>
 </body>
 </html>
