@@ -2,330 +2,413 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Hub de Estudos - Enfermagem</title>
     <style>
-        /* --- DESIGN ESTRUTURAL --- */
+        /* --- RESET & VARIÁVEIS --- */
         :root {
-            --primary: #005b96;
-            --accent: #00796b;
-            --bg: #f4f4f9;
-            --card: #ffffff;
-            --text: #333;
-            --correct: #28a745;
-            --wrong: #dc3545;
+            --primary: #005b96;       /* Azul Institucional */
+            --primary-dark: #003f6b;
+            --accent: #009688;        /* Verde Saúde */
+            --bg-body: #f0f2f5;       /* Cinza bem claro (fundo de app) */
+            --surface: #ffffff;       /* Branco puro */
+            --text-main: #333333;
+            --text-muted: #666666;
+            --correct: #2e7d32;       /* Verde Sucesso */
+            --wrong: #c62828;         /* Vermelho Erro */
+            --shadow: 0 4px 12px rgba(0,0,0,0.08);
+            --radius: 12px;
         }
 
-        body { font-family: Helvetica, Arial, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 10px; line-height: 1.5; }
-        .container { max-width: 800px; margin: 0 auto; background: var(--card); padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        
-        /* Header e Títulos */
-        h1 { color: var(--primary); margin: 0; }
-        .subtitle { text-align: center; color: #666; font-size: 0.9em; margin-bottom: 30px; margin-top: 10px; }
-        
-        /* Estilo da Setinha de Voltar */
-        .header-nav { display: flex; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 15px; }
-        .back-arrow {
-            background: none; border: none; font-size: 2em; color: var(--primary);
-            cursor: pointer; padding-right: 15px; transition: transform 0.2s;
-            line-height: 1;
-        }
-        .back-arrow:hover { transform: translateX(-3px); color: var(--accent); }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
-        /* Menu Styles */
-        .menu-title { text-align: center; margin-top: 10px; }
-        .menu-grid { display: grid; grid-template-columns: 1fr; gap: 15px; }
-        @media (min-width: 600px) { .menu-grid { grid-template-columns: 1fr 1fr; } }
-        
-        .menu-btn {
-            background: white; border: 2px solid var(--primary); color: var(--primary);
-            padding: 20px; font-size: 1.1em; font-weight: bold; border-radius: 8px;
-            cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center;
-            text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-        .menu-btn:hover { background: var(--primary); color: white; transform: translateY(-2px); }
-        .menu-btn.disabled { border-color: #ccc; color: #ccc; cursor: not-allowed; pointer-events: none; background: #f9f9f9; }
-
-        /* Quiz Styles */
-        .screen { display: none; } /* Esconde as telas não ativas */
-        .active { display: block; } /* Mostra a tela ativa */
-
-        .question-block { margin-bottom: 30px; border-bottom: 1px solid #eee; padding-bottom: 20px; }
-        .question-title { font-weight: bold; margin-bottom: 15px; font-size: 1.1em; color: #000; }
-        .badge { background: var(--accent); color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.8em; margin-right: 5px; vertical-align: middle; }
-        
-        .option-btn {
-            display: block; width: 100%; padding: 12px; text-align: left; margin-bottom: 10px;
-            background: #fff; border: 2px solid #ddd; border-radius: 6px; cursor: pointer; color: #444;
-            transition: background 0.2s;
-        }
-        .option-btn:hover { background: #f0f0f0; }
-        .option-btn.selected { background: #e3f2fd; border-color: var(--primary); color: #000; font-weight: 500; }
-
-        .action-btn {
-            width: 100%; padding: 15px; background: var(--primary); color: white; border: none;
-            border-radius: 6px; font-size: 1.2em; cursor: pointer; margin-top: 20px;
-        }
-        .action-btn:hover { opacity: 0.9; }
-        .back-btn { background: #666; margin-top: 10px; }
-
-        /* Resultados */
-        .result-card { padding: 15px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 6px; background: #fff; }
-        .result-card.correct { border-left: 5px solid var(--correct); }
-        .result-card.wrong { border-left: 5px solid var(--wrong); }
-        .score-board { text-align: center; font-size: 1.5em; padding: 20px; background: #e8eaf6; border-radius: 8px; margin-bottom: 20px; font-weight: bold; color: var(--primary); }
-        .explanation { background: #f9f9f9; padding: 10px; font-size: 0.9em; margin-top: 5px; border-radius: 4px; }
-        .status-correct { color: var(--correct); font-weight: bold; }
-        .status-wrong { color: var(--wrong); font-weight: bold; }
-
-        /* --- ÁREA INFORMATIVA (RESUMOS) --- */
-        .info-section {
-            margin-top: 40px;
-            padding-top: 20px;
-            border-top: 2px dashed #ddd; /* Linha tracejada para separar */
-        }
-
-        .info-header {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .info-header h2 {
-            color: var(--primary);
-            font-size: 1.3em;
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
             margin: 0;
+            padding: 15px;
+            line-height: 1.6;
         }
 
-        .info-grid {
+        /* --- CONTAINER PRINCIPAL --- */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding-bottom: 40px;
+        }
+
+        /* --- CABEÇALHOS --- */
+        h1 {
+            color: var(--primary);
+            font-size: 1.8rem;
+            text-align: center;
+            margin-bottom: 5px;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 30px;
+        }
+
+        /* --- TELAS (GERENCIAMENTO) --- */
+        .screen { display: none; animation: fadeIn 0.3s ease; }
+        .active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- MENU (GRID) --- */
+        .menu-grid {
             display: grid;
-            grid-template-columns: 1fr;
+            grid-template-columns: 1fr; /* Mobile: 1 coluna */
             gap: 15px;
+            margin-bottom: 40px;
         }
 
         @media (min-width: 600px) {
-            .info-grid { grid-template-columns: 1fr 1fr; }
+            .menu-grid { grid-template-columns: repeat(2, 1fr); } /* PC: 2 colunas */
         }
+
+        .menu-btn {
+            background: var(--surface);
+            color: var(--primary);
+            border: none;
+            padding: 25px 20px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .menu-btn:active { transform: scale(0.98); }
+        .menu-btn:hover:not(.disabled) { transform: translateY(-3px); box-shadow: 0 6px 16px rgba(0,91,150,0.2); }
+        
+        /* Indicador visual lateral no botão */
+        .menu-btn::before {
+            content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 6px; background: var(--primary);
+        }
+
+        .menu-btn.disabled {
+            background: #e0e0e0;
+            color: #999;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        .menu-btn.disabled::before { background: #bdbdbd; }
+
+        /* --- ÁREA DE QUIZ --- */
+        .header-nav {
+            display: flex;
+            align-items: center;
+            background: var(--surface);
+            padding: 15px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+            position: sticky;
+            top: 10px;
+            z-index: 100;
+        }
+
+        .back-arrow {
+            background: none; border: none; font-size: 1.5rem; color: var(--text-muted);
+            cursor: pointer; padding: 5px 15px 5px 5px; margin-right: 10px;
+            border-right: 1px solid #eee;
+        }
+
+        .question-block {
+            background: var(--surface);
+            padding: 20px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 25px;
+        }
+
+        .question-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #222;
+        }
+
+        .badge {
+            background: var(--accent); color: white;
+            padding: 3px 8px; border-radius: 6px;
+            font-size: 0.75rem; vertical-align: middle;
+            margin-right: 8px; display: inline-block; margin-bottom: 5px;
+        }
+
+        .option-btn {
+            display: block; width: 100%;
+            padding: 16px;
+            margin-bottom: 12px;
+            text-align: left;
+            background: #f8f9fa;
+            border: 2px solid transparent;
+            border-radius: 8px;
+            font-size: 1rem;
+            color: var(--text-main);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .option-btn:hover { background: #eef2f5; }
+        .option-btn.selected {
+            background: #e3f2fd;
+            border-color: var(--primary);
+            color: var(--primary-dark);
+            font-weight: 500;
+        }
+
+        /* --- BOTÕES DE AÇÃO (Finalizar/Voltar) --- */
+        .action-btn {
+            width: 100%;
+            padding: 18px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,91,150,0.3);
+            margin-top: 10px;
+        }
+        .action-btn:active { transform: scale(0.98); }
+        .back-btn { background: #78909c; box-shadow: none; margin-top: 15px; }
+
+        /* --- CARDS INFORMATIVOS (Resumos) --- */
+        .info-section { margin-top: 30px; }
+        .info-header h2 { font-size: 1.2rem; color: var(--text-main); border-left: 5px solid var(--accent); padding-left: 15px; margin-bottom: 20px; }
+        
+        .info-grid {
+            display: grid; grid-template-columns: 1fr; gap: 15px;
+        }
+        @media (min-width: 768px) { .info-grid { grid-template-columns: repeat(2, 1fr); } }
 
         .info-card {
-            background: #fff;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
+            background: var(--surface);
             padding: 15px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            transition: transform 0.2s;
-            border-left: 4px solid var(--accent); /* Detalhe colorido à esquerda */
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border-left: 4px solid #ddd;
         }
 
-        .info-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
+        .info-title-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .info-disease { font-weight: bold; color: #444; font-size: 0.95rem; }
+        .info-content { font-size: 0.9rem; color: #666; }
 
-        .info-title-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-            border-bottom: 1px solid #f0f0f0;
-            padding-bottom: 8px;
-        }
+        /* Cores das Tags */
+        .tag { padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: bold; color: white; text-transform: uppercase; }
+        .tag-imediata { background: #e53935; }
+        .tag-semanal { background: #fbc02d; color: #444; }
+        .tag-surtos { background: #8e24aa; }
+        .tag-misto { background: #546e7a; }
 
-        .info-disease {
-            font-weight: bold;
-            color: var(--primary);
-            font-size: 1.1em;
-            text-transform: uppercase;
+        /* --- RESULTADOS --- */
+        .score-board {
+            background: var(--surface);
+            padding: 30px;
+            border-radius: var(--radius);
+            text-align: center;
+            box-shadow: var(--shadow);
+            margin-bottom: 25px;
         }
-
-        /* Etiquetas de Notificação */
-        .tag {
-            font-size: 0.7em;
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-weight: bold;
-            color: white;
-            letter-spacing: 0.5px;
+        .score-number { font-size: 2.5rem; font-weight: 800; color: var(--primary); display: block; }
+        
+        .result-card {
+            background: var(--surface); padding: 15px; margin-bottom: 15px;
+            border-radius: 8px; border-left: 5px solid #ddd;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
-
-        .tag-imediata { background-color: #dc3545; } /* Vermelho */
-        .tag-semanal { background-color: #f0ad4e; } /* Laranja/Amarelo */
-
-        .info-content {
-            font-size: 0.9em;
-            color: #555;
-            line-height: 1.4;
-        }
+        .result-card.correct { border-left-color: var(--correct); }
+        .result-card.wrong { border-left-color: var(--wrong); }
+        
+        .status-correct { color: var(--correct); font-weight: bold; }
+        .status-wrong { color: var(--wrong); font-weight: bold; }
+        .explanation { background: #f1f8e9; padding: 10px; margin-top: 10px; border-radius: 6px; font-size: 0.9rem; color: #33691e; }
 
     </style>
 </head>
 <body>
 
 <div class="container screen active" id="menu-screen">
-    <h1 class="menu-title">Hub de Estudos - Enfermagem</h1>
-    <p class="subtitle">Selecione a matéria para iniciar o simulado</p>
+    <h1>Hub de Estudos</h1>
+    <p class="subtitle">Técnico em Enfermagem</p>
     
     <div class="menu-grid">
         <button class="menu-btn" onclick="iniciarQuiz('relacoes')">Relações Humanas</button>
         <button class="menu-btn" onclick="iniciarQuiz('coletiva')">Saúde Coletiva (Vacinas)</button>
         <button class="menu-btn" onclick="iniciarQuiz('doencas')">Saúde Coletiva (Doenças)</button>
+        <button class="menu-btn" onclick="iniciarQuiz('psicologia')">Psicologia</button>
         
-        <button class="menu-btn disabled" id="btn-portugues" onclick="iniciarQuiz('portugues')">Língua Portuguesa (Em breve)</button>
-        <button class="menu-btn disabled" id="btn-psicologia" onclick="iniciarQuiz('psicologia')">Psicologia</button>
+        <button class="menu-btn disabled" id="btn-portugues" onclick="iniciarQuiz('portugues')">Português (Em breve)</button>
         <button class="menu-btn disabled" id="btn-ambiental" onclick="iniciarQuiz('ambiental')">Saúde Ambiental (Em breve)</button>
-        <button class="menu-btn disabled" id="btn-organizacional" onclick="iniciarQuiz('organizacional')">Processos Organizacionais (Em breve)</button>
+        <button class="menu-btn disabled" id="btn-organizacional" onclick="iniciarQuiz('organizacional')">Processos Organiz. (Em breve)</button>
     </div>
 
     <div class="info-section">
         <div class="info-header">
-            <h2>Resumo de Notificações Compulsórias</h2>
-            <p style="color:#666; font-size:0.9em; margin-top:5px;">Guia rápido de vigilância epidemiológica</p>
+            <h2>⚡ Notificações Compulsórias</h2>
+        </div>
+
+        <div class="info-grid">
+            <div class="info-card" style="border-left-color: #e53935;">
+                <div class="info-title-row"><span class="info-disease">Rubéola</span><span class="tag tag-imediata">Imediata (24h)</span></div>
+                <div class="info-content">Notificar e investigar suspeitos em até 24h.</div>
+            </div>
+            <div class="info-card" style="border-left-color: #e53935;">
+                <div class="info-title-row"><span class="info-disease">Sarampo</span><span class="tag tag-imediata">Imediata (24h)</span></div>
+                <div class="info-content">Notificar suspeitos em 24h + Investigação Obrigatória.</div>
+            </div>
+            <div class="info-card" style="border-left-color: #e53935;">
+                <div class="info-title-row"><span class="info-disease">Difteria</span><span class="tag tag-imediata">Imediata (24h)</span></div>
+                <div class="info-content">Notificação imediata e investigação epidemiológica.</div>
+            </div>
+            <div class="info-card" style="border-left-color: #e53935;">
+                <div class="info-title-row"><span class="info-disease">Meningite</span><span class="tag tag-imediata">Imediata (24h)</span></div>
+                <div class="info-content">Suspeita de Doença Meningocócica ou Haemophilus.</div>
+            </div>
+            <div class="info-card" style="border-left-color: #e53935;">
+                <div class="info-title-row"><span class="info-disease">Raiva Humana</span><span class="tag tag-imediata">Imediata (24h)</span></div>
+                <div class="info-content">Todo caso humano suspeito e acidentes graves.</div>
+            </div>
+            <div class="info-card" style="border-left-color: #e53935;">
+                <div class="info-title-row"><span class="info-disease">Febre Amarela</span><span class="tag tag-imediata">Imediata (24h)</span></div>
+                <div class="info-content">Suspeitos com febre, icterícia e/ou hemorragias.</div>
+            </div>
+            <div class="info-card" style="border-left-color: #546e7a;">
+                <div class="info-title-row"><span class="info-disease">Tétano</span><span class="tag tag-misto">Misto</span></div>
+                <div class="info-content">Neonatal: Imediata (24h) | Acidental: Semanal.</div>
+            </div>
+            <div class="info-card" style="border-left-color: #fbc02d;">
+                <div class="info-title-row"><span class="info-disease">Coqueluche</span><span class="tag tag-semanal">Semanal</span></div>
+                <div class="info-content">Casos confirmados: notificação semanal.</div>
+            </div>
+            <div class="info-card" style="border-left-color: #fbc02d;">
+                <div class="info-title-row"><span class="info-disease">Hanseníase</span><span class="tag tag-semanal">Semanal</span></div>
+                <div class="info-content">Casos novos diagnosticados.</div>
+            </div>
+            <div class="info-card" style="border-left-color: #fbc02d;">
+                <div class="info-title-row"><span class="info-disease">Tuberculose</span><span class="tag tag-semanal">Semanal</span></div>
+                <div class="info-content">Casos confirmados (acompanhar até a cura).</div>
+            </div>
+            <div class="info-card" style="border-left-color: #fbc02d;">
+                <div class="info-title-row"><span class="info-disease">Hepatites Virais</span><span class="tag tag-semanal">Semanal</span></div>
+                <div class="info-content">Casos confirmados ou inconclusivos (A, B, C, D, E).</div>
+            </div>
+            <div class="info-card" style="border-left-color: #8e24aa;">
+                <div class="info-title-row"><span class="info-disease">Caxumba</span><span class="tag tag-surtos">Surtos</span></div>
+                <div class="info-content">Nacional: Surtos. Estadual: Pode variar.</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container screen" id="quiz-screen">
+    <div class="header-nav">
+        <button class="back-arrow" onclick="voltarAoMenu()">&#8592;</button>
+        <h2 id="quiz-title" style="margin:0; font-size:1.2rem; color:var(--primary);">Matéria</h2>
+    </div>
+
+   <div id="resumo-portugues" class="info-section" style="display: none; margin-bottom: 30px; border-top: none;">
+        <div class="info-header">
+            <h2 style="font-size: 1.1em; color: var(--accent);">📚 Resumo Explicativo: Gramática</h2>
+            <p style="font-size: 0.85rem; color: #666; margin-top: -10px;">Para quem nunca entendeu essas regras antes:</p>
         </div>
 
         <div class="info-grid">
             <div class="info-card">
                 <div class="info-title-row">
-                    <span class="info-disease">Rubéola</span>
-                    <span class="tag tag-imediata">Imediata (24h)</span>
+                    <span class="info-disease">1. Variações (Mudanças na Língua)</span>
                 </div>
-                <div class="info-content">Todo caso suspeito deve ser notificado em até 24 horas e investigado obrigatoriamente.</div>
-            </div>
-
-            <div class="info-card">
-                <div class="info-title-row">
-                    <span class="info-disease">Sarampo</span>
-                    <span class="tag tag-imediata">Imediata (24h)</span>
-                </div>
-                <div class="info-content">Todo caso suspeito deve ser notificado em até 24 horas com investigação epidemiológica obrigatória.</div>
-            </div>
-
-            <div class="info-card">
-                <div class="info-title-row">
-                    <span class="info-disease">Difteria</span>
-                    <span class="tag tag-imediata">Imediata (24h)</span>
-                </div>
-                <div class="info-content">Todo caso suspeito requer notificação imediata e investigação epidemiológica.</div>
-            </div>
-
-            <div class="info-card">
-                <div class="info-title-row">
-                    <span class="info-disease">Coqueluche</span>
-                    <span class="tag tag-semanal">Semanal</span>
-                </div>
-                <div class="info-content">Casos confirmados devem ser notificados semanalmente ao sistema de vigilância.</div>
-            </div>
-
-            <div class="info-card">
-                <div class="info-title-row">
-                    <span class="info-disease">Hanseníase</span>
-                    <span class="tag tag-semanal">Semanal</span>
-                </div>
-                <div class="info-content">Todo caso novo diagnosticado deve ser notificado semanalmente.</div>
-            </div>
-
-            <div class="info-card">
-                <div class="info-title-row">
-                    <span class="info-disease">Tuberculose</span>
-                    <span class="tag tag-semanal">Semanal</span>
-                </div>
-                <div class="info-content">Todo caso confirmado deve ser notificado semanalmente e acompanhado até a cura.</div>
-            </div>
-            <div class="info-card">
-                <div class="info-title-row">
-                    <span class="info-disease">Meningite (Meningocócica)</span>
-                    <span class="tag tag-imediata">Imediata (24h)</span>
-                </div>
-                <div class="info-content">
-                    Casos suspeitos de Doença Meningocócica ou por Haemophilus influenzae exigem notificação imediata.
+                <div class="info-content" style="font-size: 0.85em;">
+                    <ul style="padding-left: 15px; margin: 0; list-style: none;">
+                        <li style="margin-bottom: 8px;">
+                            🗺️ <strong>Geográfica (Diatópica):</strong> Muda de acordo com a <em>região</em>.<br>
+                            <span style="color:#555;">Ex: Em SP é "Mandioca", no Nordeste é "Macaxeira".</span>
+                        </li>
+                        <li style="margin-bottom: 8px;">
+                            ⏳ <strong>Histórica (Diacrônica):</strong> Muda com o passar do <em>tempo</em>.<br>
+                            <span style="color:#555;">Ex: Antigamente diziam "Vossa Mercê", hoje dizem "Você".</span>
+                        </li>
+                        <li style="margin-bottom: 8px;">
+                            👥 <strong>Social (Diastrática):</strong> Muda conforme o grupo social ou escolaridade.<br>
+                            <span style="color:#555;">Ex: O médico diz "Cefaleia", o paciente diz "Dor de cabeça".</span>
+                        </li>
+                        <li>
+                            👔 <strong>Situacional (Diafásica):</strong> Muda dependendo do momento (Formal vs Informal).<br>
+                            <span style="color:#555;">Ex: Falar com um juiz vs falar com um amigo no bar.</span>
+                        </li>
+                    </ul>
                 </div>
             </div>
 
             <div class="info-card">
                 <div class="info-title-row">
-                    <span class="info-disease">Hepatites Virais</span>
-                    <span class="tag tag-semanal">Semanal</span>
+                    <span class="info-disease">2. Funções (Qual a intenção?)</span>
                 </div>
-                <div class="info-content">
-                    Todos os casos confirmados ou inconclusivos de Hepatites (A, B, C, D, E) devem ser notificados semanalmente.
-                </div>
-            </div>
-
-            <div class="info-card">
-                <div class="info-title-row">
-                    <span class="info-disease">Raiva Humana</span>
-                    <span class="tag tag-imediata">Imediata (24h)</span>
-                </div>
-                <div class="info-content">
-                    Todo caso humano suspeito é de notificação imediata. Acidentes com animais potencialmente transmissores também devem ser notificados.
+                <div class="info-content" style="font-size: 0.85em;">
+                    <ul style="padding-left: 15px; margin: 0; list-style: none;">
+                        <li style="margin-bottom: 6px;">📰 <strong>Referencial:</strong> Foco na INFORMAÇÃO real. (Ex: Notícia de jornal).</li>
+                        <li style="margin-bottom: 6px;">❤️ <strong>Emotiva:</strong> Foco no EU/Sentimentos. (Ex: "Estou tão triste!").</li>
+                        <li style="margin-bottom: 6px;">🫵 <strong>Conativa:</strong> Foco em VOCÊ/Convencer. (Ex: "Compre batom!", "Vacine-se!").</li>
+                        <li style="margin-bottom: 6px;">📞 <strong>Fática:</strong> Foco no CANAL/Testar som. (Ex: "Alô?", "Tá me ouvindo?").</li>
+                        <li style="margin-bottom: 6px;">📖 <strong>Metalinguística:</strong> O código explicando o código. (Ex: Dicionário definindo uma palavra).</li>
+                        <li>🎨 <strong>Poética:</strong> Foco na BELEZA da mensagem. (Ex: Poemas, rimas, músicas).</li>
+                    </ul>
                 </div>
             </div>
 
             <div class="info-card">
                 <div class="info-title-row">
-                    <span class="info-disease">Febre Amarela</span>
-                    <span class="tag tag-imediata">Imediata (24h)</span>
+                    <span class="info-disease">3. Figuras (Efeitos de Sentido)</span>
                 </div>
-                <div class="info-content">
-                    Todo caso suspeito (indivíduo com febre, icterícia e/ou hemorragias em área de risco) deve ser notificado imediatamente.
-                </div>
-            </div>
-
-            <div class="info-card">
-                <div class="info-title-row">
-                    <span class="info-disease">Caxumba</span>
-                    <span class="tag tag-semanal">Surtos</span>
-                </div>
-                <div class="info-content">
-                    Nacionalmente, a notificação é obrigatória na ocorrência de surtos (agregado de casos). Alguns estados exigem notificação individual.
-                </div>
-            </div>
-
-            <div class="info-card">
-                <div class="info-title-row">
-                    <span class="info-disease">Tétano</span>
-                    <span class="tag tag-imediata">Misto</span>
-                </div>
-                <div class="info-content">
-                    <strong>Neonatal:</strong> Notificação Imediata (24h).<br>
-                    <strong>Acidental:</strong> Notificação Semanal.
+                <div class="info-content" style="font-size: 0.85em;">
+                    <ul style="padding-left: 15px; margin: 0; list-style: none;">
+                        <li style="margin-bottom: 6px;"><strong>Metáfora:</strong> Comparação direta (sem usar "como").<br><span style="color:#555;">Ex: "Minha vida é um palco."</span></li>
+                        <li style="margin-bottom: 6px;"><strong>Comparação:</strong> Usa conectivos ("como", "tal qual").<br><span style="color:#555;">Ex: "Minha vida é <em>como</em> um palco."</span></li>
+                        <li style="margin-bottom: 6px;"><strong>Metonímia:</strong> Troca uma coisa pela outra relacionada.<br><span style="color:#555;">Ex: "Li Machado de Assis" (li o livro, não o homem).</span></li>
+                        <li style="margin-bottom: 6px;"><strong>Hipérbole:</strong> Exagero dramático.<br><span style="color:#555;">Ex: "Estou morrendo de fome."</span></li>
+                        <li style="margin-bottom: 6px;"><strong>Prosopopeia:</strong> Dar vida a coisas inanimadas.<br><span style="color:#555;">Ex: "O vento beijou meu rosto."</span></li>
+                        <li style="margin-bottom: 6px;"><strong>Antítese:</strong> Palavras opostas.<br><span style="color:#555;">Ex: "Guerra e Paz", "Amor e Ódio".</span></li>
+                        <li><strong>Paradoxo:</strong> Ideia impossível/contraditória.<br><span style="color:#555;">Ex: "Ferida que dói e não se sente."</span></li>
+                    </ul>
                 </div>
             </div>
         </div>
     </div>
 
-</div>
-
-<div class="container screen" id="quiz-screen">
-    <div class="header-nav">
-        <button class="back-arrow" onclick="voltarAoMenu()" title="Voltar ao Menu">&#8592;</button>
-        <h1 id="quiz-title">Matéria</h1>
-    </div>
-
     <div id="questions-container"></div>
-    
     <button class="action-btn" onclick="calcularResultados()">Finalizar Simulado</button>
-    <button class="action-btn back-btn" onclick="voltarAoMenu()">Cancelar e Voltar</button>
+    <button class="action-btn back-btn" onclick="voltarAoMenu()">Cancelar</button>
 </div>
 
 <div class="container screen" id="result-screen">
-    <div class="header-nav">
-        <button class="back-arrow" onclick="voltarAoMenu()" title="Voltar ao Menu">&#8592;</button>
-        <h1>Resultado</h1>
+    <div class="score-board">
+        <span style="font-size:0.9rem; color:#777;">Sua Nota Final</span>
+        <span class="score-number" id="final-score-display">0%</span>
+        <div id="final-score-text" style="margin-top:5px; font-size:0.9rem;"></div>
     </div>
     
-    <div class="score-board" id="final-score"></div>
     <div id="detailed-results"></div>
-    
-    <button class="action-btn" onclick="voltarAoMenu()">Voltar ao Menu Principal</button>
+    <button class="action-btn" onclick="voltarAoMenu()">Voltar ao Menu</button>
 </div>
 
 <script>
-    /* ==============================================================
-       ÁREA DE DADOS 
-       ============================================================== */
-    
+    /* --- BANCO DE DADOS --- */
+    // prettier-ignore
     const bancoDeQuestoes = {
-        // --- MATÉRIA 1: RELAÇÕES HUMANAS ---
-        // prettier-ignore
         relacoes: [
             { id: 1, text: "A Política Nacional de Humanização (PNH) foi criada em 2003 com o objetivo de efetivar os princípios do SUS nas práticas cotidianas de saúde. Qual das alternativas apresenta corretamente os princípios do SUS que a PNH propõe resgatar?", options: { a: "Universalidade, equidade, integralidade, descentralização, hierarquização e participação popular", b: "Privatização, centralização, fragmentação do cuidado e gestão autoritária", c: "Atendimento especializado, exclusividade, tratamento diferenciado e gestão verticalizada", d: "Seletividade, hierarquia rígida, individualismo e gestão por resultados financeiros" }, correct: "a" },
             { id: 2, text: "Um dos princípios norteadores da PNH é a transversalidade. Considerando o contexto hospitalar, como esse princípio pode ser aplicado no dia a dia?", options: { a: "Mantendo cada setor isolado em suas funções específicas sem comunicação entre as equipes", b: "Promovendo o aumento da comunicação intra e intergrupos, facilitando o diálogo entre diferentes setores e profissionais", c: "Estabelecendo uma hierarquia rígida onde apenas os gestores tomam decisões", d: "Limitando a participação dos usuários nas decisões sobre seu próprio cuidado" }, correct: "b" },
@@ -358,44 +441,42 @@
             { id: 29, text: "A promoção da equidade em saúde envolve abordar barreiras. Qual situação exemplifica uma ação voltada para a equidade?", options: { a: "Oferecer o mesmo tratamento padronizado para todos os pacientes, independente de suas características", b: "Criar grupos de apoio específicos para populações vulneráveis e oferecer materiais educativos em diferentes idiomas e formatos acessíveis", c: "Priorizar apenas pacientes com maior poder aquisitivo", d: "Limitar o atendimento a grupos específicos para otimizar recursos" }, correct: "b" },
             { id: 30, text: "O respeito à autonomia do paciente é fundamental. Qual prática melhor exemplifica isso em um contexto de diversidade?", options: { a: "Tomar decisões em nome do paciente para agilizar o processo de tratamento", b: "Impor as recomendações médicas sem considerar as preferências culturais do paciente", c: "Garantir que o paciente esteja totalmente informado e envolvido nas decisões sobre seu tratamento, respeitando suas escolhas e valores culturais", d: "Delegar todas as decisões exclusivamente para a família, ignorando a vontade do paciente" }, correct: "c" }
         ],
-
-        // --- MATÉRIA 2: SAÚDE COLETIVA (VACINAS) ---
+        
         coletiva: [
-            { id: 1, tag: "BCG", text: "A vacina BCG é composta por bacilos vivos atenuados e protege contra formas graves da tuberculose. Sobre a técnica de administração e evolução da lesão vacinal, assinale a alternativa correta:", options: {a: "Deve ser administrada via subcutânea profunda, e a ausência de úlcera após 4 semanas indica erro técnico.", b: "A administração é intradérmica na inserção inferior do músculo deltoide direito; a evolução normal inclui mácula, pústula, úlcera e crosta, cicatrizando em até 12 semanas.", c: "A administração é intramuscular no vasto lateral da coxa, não devendo ser higienizada a pele previamente para não inativar o bacilo.", d: "Caso a úlcera demore mais de 12 semanas para cicatrizar, deve-se iniciar imediatamente o tratamento com esquema básico para tuberculose (Rifampicina + Isoniazida)."}, correct: "b" },
-            { id: 2, tag: "BCG", text: "Um recém-nascido de 25 dias é levado à UBS para vacinação de rotina. A mãe relata que a criança nasceu prematura com 31 semanas e pesando 1.850g. No momento da consulta, o bebê pesa 1.950g e está clinicamente estável. Qual a conduta correta referente à BCG?", options: {a: "Administrar a vacina imediatamente, pois a prematuridade não é contraindicação.", b: "Adiar a vacinação até que a criança atinja o peso mínimo de 2.000g, conforme normas do PNI.", c: "Administrar metade da dose (0,05ml) devido ao baixo peso.", d: "Contraindicar a vacina definitivamente e prescrever Isoniazida profilática."}, correct: "b" },
-            { id: 3, tag: "BCG", text: "De acordo com as Notas Técnicas mais recentes do Ministério da Saúde (PNI) sobre a revacinação da BCG, qual é a conduta para uma criança de 1 ano que recebeu a vacina ao nascer (com registro em carteira), mas não apresenta a cicatriz vacinal?", options: {a: "Revacinar imediatamente, pois a ausência de cicatriz é prova de falha imunológica.", b: "Não revacinar. A ausência de cicatriz não indica falta de proteção e a revacinação não é mais recomendada se houver registro da dose.", c: "Solicitar teste PPD (Tuberculínico) e revacinar apenas se o resultado for não reator.", d: "Aguardar até os 5 anos de idade e administrar uma dose de reforço escolar."}, correct: "b" },
-            { id: 4, tag: "BCG", text: "Após a administração da BCG, a mãe retorna à unidade preocupada com o surgimento de um gânglio axilar de 2 cm, sem supuração, na mesma axila do braço vacinado. O técnico deve orientar que:", options: {a: "Trata-se de uma linfadenopatia regional não supurada, um evento adverso esperado que geralmente regride espontaneamente, não necessitando de intervenção medicamentosa imediata.", b: "É um abscesso frio grave que exige drenagem cirúrgica imediata e notificação compulsória.", c: "Houve erro na aplicação (vacina profunda) e deve-se aplicar compressas quentes três vezes ao dia.", d: "A criança está com tuberculose ganglionar ativa e deve ser isolada de outros familiares."}, correct: "a" },
-            { id: 5, tag: "Hep B", text: "Um recém-nascido é filho de mãe portadora do vírus da Hepatite B (HBsAg positiva). Para prevenir a transmissão vertical, além da vacina contra Hepatite B nas primeiras 12 horas de vida, qual outra medida é indispensável?", options: {a: "Suspender o aleitamento materno permanentemente.", b: "Administrar Imunoglobulina Humana Anti-Hepatite B (IGHAHB), preferencialmente nas primeiras 12 a 24 horas, em membro oposto ao da vacina.", c: "Administrar dose dobrada da vacina Hepatite B, dispensando a imunoglobulina.", d: "Iniciar tratamento com antiviral (Lamivudina) para o recém-nascido por 30 dias."}, correct: "b" },
-            { id: 6, tag: "Hep B", text: "Para um adulto de 35 anos, sem comprovação vacinal anterior, o esquema completo da vacina contra Hepatite B recombinante deve ser realizado com:", options: {a: "Dose única, via intramuscular no deltoide.", b: "Duas doses com intervalo de 6 meses entre elas.", c: "Três doses, com intervalo de 30 dias entre a 1ª e a 2ª, e 6 meses entre a 1ª e a 3ª (0, 1 e 6 meses).", d: "Três doses mensais consecutivas (0, 1 e 2 meses) para garantir soroconversão rápida."}, correct: "c" },
-            { id: 7, tag: "Hep B", text: "A via de administração da vacina Hepatite B varia conforme a idade e a massa muscular. Para neonatos e lactentes, a técnica correta recomendada pelo PNI é:", options: {a: "Intramuscular profunda no músculo vasto lateral da coxa, devido ao risco de lesão nervosa no glúteo e menor massa no deltoide.", b: "Intramuscular na região ventro-glútea (Hochstetter), independentemente da idade.", c: "Subcutânea na região do deltoide, para facilitar a absorção lenta do antígeno.", d: "Intradérmica no antebraço esquerdo, similar à técnica de sensibilidade."}, correct: "a" },
-            { id: 8, tag: "Hep B", text: "Em relação aos grupos vulneráveis, qual a especificidade do esquema de vacinação contra Hepatite B para pacientes renais crônicos em hemodiálise?", options: {a: "Não há alteração, segue o esquema 0-1-6 meses com dose padrão.", b: "Devem receber esquema de 4 doses (0, 1, 2 e 6 meses) com o dobro do volume da dose habitual para adultos.", c: "A vacina é contraindicada devido à baixa imunidade destes pacientes.", d: "Devem receber dose única anual de reforço."}, correct: "b" },
-            { id: 9, tag: "Hep A", text: "A Vacina Hepatite A (inativada) faz parte do calendário infantil. Qual é a idade recomendada para a dose única e o prazo limite para administração na rotina (caso a criança perca a data ideal)?", options: {a: "Recomendada aos 12 meses; disponível até 1 ano, 11 meses e 29 dias.", b: "Recomendada aos 15 meses; disponível até 4 anos, 11 meses e 29 dias.", c: "Recomendada aos 2 anos; disponível sem limite de idade.", d: "Recomendada aos 6 meses; disponível até completar 1 ano."}, correct: "b" },
-            { id: 10, tag: "Hep A", text: "Sobre a conservação e administração da vacina Hepatite A, assinale a alternativa que contém as informações técnicas corretas:", options: {a: "Conservar entre +2°C e +8°C; administração via intramuscular, preferencialmente no deltoide (em maiores de 2 anos) ou vasto lateral (menores de 2 anos).", b: "Conservar congelada (-20°C); administração via oral (gotinhas).", c: "Conservar entre +2°C e +8°C; administração via subcutânea obrigatória.", d: "Pode ser mantida em temperatura ambiente por até 24 horas; administração intradérmica."}, correct: "a" },
-            { id: 11, tag: "Hep A", text: "Um paciente adulto portador de coagulopatia (hemofilia) necessita da vacina Hepatite A. Qual é a via de administração recomendada para evitar hematomas graves, segundo o Manual dos CRIE?", options: {a: "Intramuscular profunda.", b: "Intravenosa lenta.", c: "Subcutânea.", d: "Intradérmica."}, correct: "c" },
-            { id: 12, tag: "Hep A", text: "A vacina contra Hepatite A é produzida a partir de:", options: {a: "Vírus vivo atenuado, contraindicada para imunodeprimidos.", b: "Vírus inativado (morto), sendo segura para pacientes imunossuprimidos.", c: "Bactéria inativada e toxoide tetânico.", d: "Polissacarídeo capsular conjugado."}, correct: "b" },
-            { id: 13, tag: "VIP/VOP", text: "Considerando a atualização do calendário vacinal brasileiro e a erradicação da pólio, qual é o esquema primário (1º ano de vida) para a prevenção da poliomielite?", options: {a: "3 doses de VOP (oral) aos 2, 4 e 6 meses.", b: "3 doses de VIP (injetável/inativada) aos 2, 4 e 6 meses.", c: "1 dose de VIP aos 2 meses e 2 doses de VOP aos 4 e 6 meses.", d: "Dose única de VIP ao nascer e reforços com VOP."}, correct: "b" },
-            { id: 14, tag: "VIP/VOP", text: "Uma criança imunodeprimida (ex: HIV positivo ou em quimioterapia) e seus contatos domiciliares devem receber qual tipo de vacina contra a poliomielite e por quê?", options: {a: "VOP (Sabin), para garantir imunidade de rebanho intestinal.", b: "VIP (Salk), pois é constituída de vírus inativado, eliminando o risco de poliomielite vacinal.", c: "Não devem ser vacinados contra pólio devido ao risco de reversão viral.", d: "VOP em dose fracionada para reduzir a carga viral."}, correct: "b" },
-            { id: 15, tag: "VIP/VOP", text: "Durante a administração da VOP (Vacina Oral Poliomielite), a criança cospe imediatamente após receber as gotas. Qual a conduta correta do técnico de enfermagem?", options: {a: "Considerar a dose como válida, pois a absorção na mucosa é imediata.", b: "Administrar mais uma dose imediatamente (redose). Se cuspir novamente, não administrar mais e agendar retorno.", c: "Aguardar 30 minutos e administrar nova dose.", d: "Substituir imediatamente pela vacina injetável (VIP)."}, correct: "b" },
-            { id: 16, tag: "VIP/VOP", text: "Sobre as vias de administração das vacinas contra poliomielite, assinale a correlação correta:", options: {a: "VIP: Intramuscular | VOP: Oral.", b: "VIP: Subcutânea | VOP: Intramuscular.", c: "VIP: Intradérmica | VOP: Oral.", d: "VIP: Oral | VOP: Subcutânea."}, correct: "a" },
-            { id: 17, tag: "Penta", text: "A vacina Pentavalente combina proteção contra cinco doenças. Quais são os componentes exatos desta vacina?", options: {a: "Difteria, Tétano, Coqueluche, Hepatite A e Pólio.", b: "Difteria, Tétano, Coqueluche (celular), Hepatite B e Haemophilus influenzae tipo b.", c: "Sarampo, Caxumba, Rubéola, Varicela e Febre Amarela.", d: "Difteria, Tétano, Coqueluche (acelular), Meningococo C e Pneumococo 10."}, correct: "b" },
-            { id: 18, tag: "Penta", text: "Um lactente apresentou Episódio Hipotônico-Hiporresponsivo (EHH) 12 horas após receber a primeira dose da vacina Pentavalente. Qual a conduta para a continuidade do esquema vacinal deste paciente?", options: {a: "Continuar o esquema com a Pentavalente normalmente, sob supervisão hospitalar.", b: "Suspender qualquer vacina que contenha o componente Pertussis.", c: "Substituir a Pentavalente pela DTPa (acelular) e Hepatite B + Hib isoladas nas próximas doses.", d: "Administrar apenas vacina dupla (DT) infantil, removendo o componente Pertussis."}, correct: "c" },
-            { id: 19, tag: "Penta", text: "Qual é a via de administração, local de aplicação e dosagem padrão da vacina Pentavalente para um lactente de 2 meses?", options: {a: "Via subcutânea, região do deltoide, 1.0 ml.", b: "Via intramuscular profunda, vasto lateral da coxa, 0.5 ml.", c: "Via intramuscular, região ventro-glútea, 1.0 ml.", d: "Via intradérmica, antebraço, 0.1 ml."}, correct: "b" },
-            { id: 20, tag: "Penta", text: "A vacina Pentavalente contém o componente pertussis de células inteiras. Qual reação adversa sistêmica comum pode ocorrer devido a este componente e como deve ser manejada?", options: {a: "Febre alta (>39°C) e choro persistente. Manejo com antitérmicos e compressas frias; se convulsão, alterar esquema.", b: "Paralisia flácida aguda. Notificação imediata e internação.", c: "Rash cutâneo generalizado. Administração de anti-histamínicos.", d: "Úlcera necrótica no local. Drenagem cirúrgica."}, correct: "a" },
-            { id: 21, tag: "DTP", text: "A vacina DTP (Tríplice Bacteriana Infantil) é indicada no calendário do PNI exclusivamente para:", options: {a: "Iniciar o esquema básico aos 2, 4 e 6 meses.", b: "Reforços aos 15 meses e aos 4 anos de idade.", c: "Vacinação de gestantes a partir da 20ª semana.", d: "Vacinação de idosos contra tétano."}, correct: "b" },
-            { id: 22, tag: "DTP", text: "Uma criança de 7 anos e 2 meses comparece à sala de vacinas sem nenhum reforço de DTP. Qual vacina deve ser administrada neste caso, considerando a idade limite?", options: {a: "Administrar DTP normalmente, pois a proteção é prioritária.", b: "Administrar vacina Pentavalente.", c: "Administrar vacina dT (Dupla tipo adulto) e vacina contra Hepatite B, pois a DTP é contraindicada a partir de 7 anos.", d: "Administrar vacina dTpa (acelular) obrigatoriamente."}, correct: "c" },
-            { id: 23, tag: "DTP", text: "A vacina DTP é administrada via intramuscular. Em crianças de 4 anos, qual é o local de aplicação preferencial, considerando o desenvolvimento muscular?", options: {a: "Vasto lateral da coxa obrigatoriamente.", b: "Músculo deltoide, desde que haja massa muscular adequada.", c: "Região glútea (quadrante superior externo).", d: "Via subcutânea no tríceps."}, correct: "b" },
-            { id: 24, tag: "DTP", text: "Qual a principal diferença entre a vacina DTP (usada na rede pública infantil) e a DTPa (acelular)?", options: {a: "A DTPa é menos eficaz na produção de anticorpos.", b: "A DTP contém células inteiras da bactéria da coqueluche, sendo mais reatogênica (mais reações adversas); a DTPa contém frações da bactéria, causando menos reações.", c: "A DTP é líquida e a DTPa é em pó liofilizado.", d: "Não há diferença, apenas o laboratório produtor."}, correct: "b" },
-            { id: 25, tag: "dT", text: "Um trabalhador da construção civil apresenta um ferimento perfurante sujo com prego enferrujado. Ele relata ter tomado a última dose da vacina antitetânica (dT) há 8 anos. Qual é a conduta profilática correta?", options: {a: "Não vacinar, pois a validade é de 10 anos.", b: "Administrar uma dose de reforço da vacina dT (pois o ferimento é de alto risco e a vacina tem > 5 anos) + Soro Antitetânico (ou IGAT) dependendo da avaliação médica.", c: "Reiniciar o esquema completo de 3 doses (0, 2, 6 meses).", d: "Apenas lavar o local com água e sabão."}, correct: "b" },
-            { id: 26, tag: "dT", text: "Uma gestante na 22ª semana de gestação chega à unidade com esquema vacinal de dT completo (3 doses), sendo a última há 3 anos. Qual a conduta recomendada pelo PNI para proteção do recém-nascido contra coqueluche?", options: {a: "Não administrar nenhuma vacina, pois o esquema está em dia.", b: "Administrar uma dose de reforço com dT (dupla adulto).", c: "Administrar uma dose da vacina dTpa (Tríplice Bacteriana Acelular do tipo adulto), para transferir anticorpos contra coqueluche ao feto.", d: "Administrar vacina DTP infantil."}, correct: "c" },
-            { id: 27, tag: "dT", text: "Um adulto perdeu o cartão de vacina e não sabe informar se já tomou vacina contra tétano. Qual o esquema a ser iniciado?", options: {a: "Dose única de reforço.", b: "Esquema completo com 3 doses de dT (0, 2 e 6 meses).", c: "Duas doses de dTpa.", d: "Coletar sorologia antes de vacinar."}, correct: "b" },
-            { id: 28, tag: "dT", text: "O que significa o 'd' minúsculo na sigla da vacina dT ou dTpa?", options: {a: "Que a dose deve ser diluída.", b: "Que contém uma quantidade menor de toxoide diftérico em relação à vacina infantil (DTP), para reduzir reações de hipersensibilidade em adultos.", c: "Que a vacina é de vírus 'diminuído'.", d: "Que a vacina protege apenas contra difteria, e não tétano."}, correct: "b" },
-            { id: 29, tag: "Febre Amarela", text: "A vacina contra Febre Amarela é constituída de vírus vivo atenuado. Uma mulher amamentando um bebê de 4 meses precisa viajar para uma área endêmica e deseja se vacinar. Qual a orientação correta conforme o PNI?", options: {a: "Pode vacinar sem restrições, pois o vírus não passa pelo leite.", b: "A vacinação é contraindicada preferencialmente; se o risco epidemiológico justificar a vacinação, ela deve suspender o aleitamento materno por 10 dias após a dose.", c: "Deve vacinar e utilizar máscara N95 ao amamentar.", d: "Deve desmamar a criança definitivamente antes de receber a vacina."}, correct: "b" },
-            { id: 30, tag: "Febre Amarela", text: "Para um viajante internacional que nunca foi vacinado, com quanto tempo de antecedência mínima ele deve receber a vacina de Febre Amarela para que seja considerada válida e protetora na data da viagem?", options: {a: "No dia do embarque.", b: "Pelo menos 10 dias antes da viagem.", c: "30 dias antes da viagem.", d: "24 horas antes da viagem."}, correct: "b" },
-            { id: 31, tag: "Febre Amarela", text: "Qual das condições abaixo configura uma contraindicação absoluta (ou precaução que exige avaliação médica rigorosa) para a vacina de Febre Amarela?", options: {a: "História de reação anafilática confirmada a ovo de galinha e imunossupressão grave.", b: "Resfriado comum sem febre.", c: "História familiar de alergia.", d: "Uso de antibióticos para infecção urinária."}, correct: "a" },
-            { id: 32, tag: "Febre Amarela", text: "Qual a via de administração e a dosagem padrão (dose plena) da vacina Febre Amarela na rotina?", options: {a: "Intramuscular, 1.0 ml.", b: "Subcutânea, 0.5 ml.", c: "Intradérmica, 0.1 ml.", d: "Oral, 2 gotas."}, correct: "b" }
+            { id: 1, tag: "BCG", text: "A vacina BCG é composta por bacilos vivos atenuados e protege contra formas graves da tuberculose. Sobre a técnica de administração e evolução da lesão vacinal, assinale a alternativa correta:", options: { a: "Deve ser administrada via subcutânea profunda, e a ausência de úlcera após 4 semanas indica erro técnico.", b: "A administração é intradérmica na inserção inferior do músculo deltoide direito; a evolução normal inclui mácula, pústula, úlcera e crosta, cicatrizando em até 12 semanas.", c: "A administração é intramuscular no vasto lateral da coxa, não devendo ser higienizada a pele previamente para não inativar o bacilo.", d: "Caso a úlcera demore mais de 12 semanas para cicatrizar, deve-se iniciar imediatamente o tratamento com esquema básico para tuberculose (Rifampicina + Isoniazida)." }, correct: "b" },
+            { id: 2, tag: "BCG", text: "Um recém-nascido de 25 dias é levado à UBS para vacinação de rotina. A mãe relata que a criança nasceu prematura com 31 semanas e pesando 1.850g. No momento da consulta, o bebê pesa 1.950g e está clinicamente estável. Qual a conduta correta referente à BCG?", options: { a: "Administrar a vacina imediatamente, pois a prematuridade não é contraindicação.", b: "Adiar a vacinação até que a criança atinja o peso mínimo de 2.000g, conforme normas do PNI.", c: "Administrar metade da dose (0,05ml) devido ao baixo peso.", d: "Contraindicar a vacina definitivamente e prescrever Isoniazida profilática." }, correct: "b" },
+            { id: 3, tag: "BCG", text: "De acordo com as Notas Técnicas mais recentes do Ministério da Saúde (PNI) sobre a revacinação da BCG, qual é a conduta para uma criança de 1 ano que recebeu a vacina ao nascer (com registro em carteira), mas não apresenta a cicatriz vacinal?", options: { a: "Revacinar imediatamente, pois a ausência de cicatriz é prova de falha imunológica.", b: "Não revacinar. A ausência de cicatriz não indica falta de proteção e a revacinação não é mais recomendada se houver registro da dose.", c: "Solicitar teste PPD (Tuberculínico) e revacinar apenas se o resultado for não reator.", d: "Aguardar até os 5 anos de idade e administrar uma dose de reforço escolar." }, correct: "b" },
+            { id: 4, tag: "BCG", text: "Após a administração da BCG, a mãe retorna à unidade preocupada com o surgimento de um gânglio axilar de 2 cm, sem supuração, na mesma axila do braço vacinado. O técnico deve orientar que:", options: { a: "Trata-se de uma linfadenopatia regional não supurada, um evento adverso esperado que geralmente regride espontaneamente, não necessitando de intervenção medicamentosa imediata.", b: "É um abscesso frio grave que exige drenagem cirúrgica imediata e notificação compulsória.", c: "Houve erro na aplicação (vacina profunda) e deve-se aplicar compressas quentes três vezes ao dia.", d: "A criança está com tuberculose ganglionar ativa e deve ser isolada de outros familiares." }, correct: "a" },
+            { id: 5, tag: "Hep B", text: "Um recém-nascido é filho de mãe portadora do vírus da Hepatite B (HBsAg positiva). Para prevenir a transmissão vertical, além da vacina contra Hepatite B nas primeiras 12 horas de vida, qual outra medida é indispensável?", options: { a: "Suspender o aleitamento materno permanentemente.", b: "Administrar Imunoglobulina Humana Anti-Hepatite B (IGHAHB), preferencialmente nas primeiras 12 a 24 horas, em membro oposto ao da vacina.", c: "Administrar dose dobrada da vacina Hepatite B, dispensando a imunoglobulina.", d: "Iniciar tratamento com antiviral (Lamivudina) para o recém-nascido por 30 dias." }, correct: "b" },
+            { id: 6, tag: "Hep B", text: "Para um adulto de 35 anos, sem comprovação vacinal anterior, o esquema completo da vacina contra Hepatite B recombinante deve ser realizado com:", options: { a: "Dose única, via intramuscular no deltoide.", b: "Duas doses com intervalo de 6 meses entre elas.", c: "Três doses, com intervalo de 30 dias entre a 1ª e a 2ª, e 6 meses entre a 1ª e a 3ª (0, 1 e 6 meses).", d: "Três doses mensais consecutivas (0, 1 e 2 meses) para garantir soroconversão rápida." }, correct: "c" },
+            { id: 7, tag: "Hep B", text: "A via de administração da vacina Hepatite B varia conforme a idade e a massa muscular. Para neonatos e lactentes, a técnica correta recomendada pelo PNI é:", options: { a: "Intramuscular profunda no músculo vasto lateral da coxa, devido ao risco de lesão nervosa no glúteo e menor massa no deltoide.", b: "Intramuscular na região ventro-glútea (Hochstetter), independentemente da idade.", c: "Subcutânea na região do deltoide, para facilitar a absorção lenta do antígeno.", d: "Intradérmica no antebraço esquerdo, similar à técnica de sensibilidade." }, correct: "a" },
+            { id: 8, tag: "Hep B", text: "Em relação aos grupos vulneráveis, qual a especificidade do esquema de vacinação contra Hepatite B para pacientes renais crônicos em hemodiálise?", options: { a: "Não há alteração, segue o esquema 0-1-6 meses com dose padrão.", b: "Devem receber esquema de 4 doses (0, 1, 2 e 6 meses) com o dobro do volume da dose habitual para adultos.", c: "A vacina é contraindicada devido à baixa imunidade destes pacientes.", d: "Devem receber dose única anual de reforço." }, correct: "b" },
+            { id: 9, tag: "Hep A", text: "A Vacina Hepatite A (inativada) faz parte do calendário infantil. Qual é a idade recomendada para a dose única e o prazo limite para administração na rotina (caso a criança perca a data ideal)?", options: { a: "Recomendada aos 12 meses; disponível até 1 ano, 11 meses e 29 dias.", b: "Recomendada aos 15 meses; disponível até 4 anos, 11 meses e 29 dias.", c: "Recomendada aos 2 anos; disponível sem limite de idade.", d: "Recomendada aos 6 meses; disponível até completar 1 ano." }, correct: "b" },
+            { id: 10, tag: "Hep A", text: "Sobre a conservação e administração da vacina Hepatite A, assinale a alternativa que contém as informações técnicas corretas:", options: { a: "Conservar entre +2°C e +8°C; administração via intramuscular, preferencialmente no deltoide (em maiores de 2 anos) ou vasto lateral (menores de 2 anos).", b: "Conservar congelada (-20°C); administração via oral (gotinhas).", c: "Conservar entre +2°C e +8°C; administração via subcutânea obrigatória.", d: "Pode ser mantida em temperatura ambiente por até 24 horas; administração intradérmica." }, correct: "a" },
+            { id: 11, tag: "Hep A", text: "Um paciente adulto portador de coagulopatia (hemofilia) necessita da vacina Hepatite A. Qual é a via de administração recomendada para evitar hematomas graves, segundo o Manual dos CRIE?", options: { a: "Intramuscular profunda.", b: "Intravenosa lenta.", c: "Subcutânea.", d: "Intradérmica." }, correct: "c" },
+            { id: 12, tag: "Hep A", text: "A vacina contra Hepatite A é produzida a partir de:", options: { a: "Vírus vivo atenuado, contraindicada para imunodeprimidos.", b: "Vírus inativado (morto), sendo segura para pacientes imunossuprimidos.", c: "Bactéria inativada e toxoide tetânico.", d: "Polissacarídeo capsular conjugado." }, correct: "b" },
+            { id: 13, tag: "VIP/VOP", text: "Considerando a atualização do calendário vacinal brasileiro e a erradicação da pólio, qual é o esquema primário (1º ano de vida) para a prevenção da poliomielite?", options: { a: "3 doses de VOP (oral) aos 2, 4 e 6 meses.", b: "3 doses de VIP (injetável/inativada) aos 2, 4 e 6 meses.", c: "1 dose de VIP aos 2 meses e 2 doses de VOP aos 4 e 6 meses.", d: "Dose única de VIP ao nascer e reforços com VOP." }, correct: "b" },
+            { id: 14, tag: "VIP/VOP", text: "Uma criança imunodeprimida (ex: HIV positivo ou em quimioterapia) e seus contatos domiciliares devem receber qual tipo de vacina contra a poliomielite e por quê?", options: { a: "VOP (Sabin), para garantir imunidade de rebanho intestinal.", b: "VIP (Salk), pois é constituída de vírus inativado, eliminando o risco de poliomielite vacinal.", c: "Não devem ser vacinados contra pólio devido ao risco de reversão viral.", d: "VOP em dose fracionada para reduzir a carga viral." }, correct: "b" },
+            { id: 15, tag: "VIP/VOP", text: "Durante a administração da VOP (Vacina Oral Poliomielite), a criança cospe imediatamente após receber as gotas. Qual a conduta correta do técnico de enfermagem?", options: { a: "Considerar a dose como válida, pois a absorção na mucosa é imediata.", b: "Administrar mais uma dose imediatamente (redose). Se cuspir novamente, não administrar mais e agendar retorno.", c: "Aguardar 30 minutos e administrar nova dose.", d: "Substituir imediatamente pela vacina injetável (VIP)." }, correct: "b" },
+            { id: 16, tag: "VIP/VOP", text: "Sobre as vias de administração das vacinas contra poliomielite, assinale a correlação correta:", options: { a: "VIP: Intramuscular | VOP: Oral.", b: "VIP: Subcutânea | VOP: Intramuscular.", c: "VIP: Intradérmica | VOP: Oral.", d: "VIP: Oral | VOP: Subcutânea." }, correct: "a" },
+            { id: 17, tag: "Penta", text: "A vacina Pentavalente combina proteção contra cinco doenças. Quais são os componentes exatos desta vacina?", options: { a: "Difteria, Tétano, Coqueluche, Hepatite A e Pólio.", b: "Difteria, Tétano, Coqueluche (celular), Hepatite B e Haemophilus influenzae tipo b.", c: "Sarampo, Caxumba, Rubéola, Varicela e Febre Amarela.", d: "Difteria, Tétano, Coqueluche (acelular), Meningococo C e Pneumococo 10." }, correct: "b" },
+            { id: 18, tag: "Penta", text: "Um lactente apresentou Episódio Hipotônico-Hiporresponsivo (EHH) 12 horas após receber a primeira dose da vacina Pentavalente. Qual a conduta para a continuidade do esquema vacinal deste paciente?", options: { a: "Continuar o esquema com a Pentavalente normalmente, sob supervisão hospitalar.", b: "Suspender qualquer vacina que contenha o componente Pertussis.", c: "Substituir a Pentavalente pela DTPa (acelular) e Hepatite B + Hib isoladas nas próximas doses.", d: "Administrar apenas vacina dupla (DT) infantil, removendo o componente Pertussis." }, correct: "c" },
+            { id: 19, tag: "Penta", text: "Qual é a via de administração, local de aplicação e dosagem padrão da vacina Pentavalente para um lactente de 2 meses?", options: { a: "Via subcutânea, região do deltoide, 1.0 ml.", b: "Via intramuscular profunda, vasto lateral da coxa, 0.5 ml.", c: "Via intramuscular, região ventro-glútea, 1.0 ml.", d: "Via intradérmica, antebraço, 0.1 ml." }, correct: "b" },
+            { id: 20, tag: "Penta", text: "A vacina Pentavalente contém o componente pertussis de células inteiras. Qual reação adversa sistêmica comum pode ocorrer devido a este componente e como deve ser manejada?", options: { a: "Febre alta (>39°C) e choro persistente. Manejo com antitérmicos e compressas frias; se convulsão, alterar esquema.", b: "Paralisia flácida aguda. Notificação imediata e internação.", c: "Rash cutâneo generalizado. Administração de anti-histamínicos.", d: "Úlcera necrótica no local. Drenagem cirúrgica." }, correct: "a" },
+            { id: 21, tag: "DTP", text: "A vacina DTP (Tríplice Bacteriana Infantil) é indicada no calendário do PNI exclusivamente para:", options: { a: "Iniciar o esquema básico aos 2, 4 e 6 meses.", b: "Reforços aos 15 meses e aos 4 anos de idade.", c: "Vacinação de gestantes a partir da 20ª semana.", d: "Vacinação de idosos contra tétano." }, correct: "b" },
+            { id: 22, tag: "DTP", text: "Uma criança de 7 anos e 2 meses comparece à sala de vacinas sem nenhum reforço de DTP. Qual vacina deve ser administrada neste caso, considerando a idade limite?", options: { a: "Administrar DTP normalmente, pois a proteção é prioritária.", b: "Administrar vacina Pentavalente.", c: "Administrar vacina dT (Dupla tipo adulto) e vacina contra Hepatite B, pois a DTP é contraindicada a partir de 7 anos.", d: "Administrar vacina dTpa (acelular) obrigatoriamente." }, correct: "c" },
+            { id: 23, tag: "DTP", text: "A vacina DTP é administrada via intramuscular. Em crianças de 4 anos, qual é o local de aplicação preferencial, considerando o desenvolvimento muscular?", options: { a: "Vasto lateral da coxa obrigatoriamente.", b: "Músculo deltoide, desde que haja massa muscular adequada.", c: "Região glútea (quadrante superior externo).", d: "Via subcutânea no tríceps." }, correct: "b" },
+            { id: 24, tag: "DTP", text: "Qual a principal diferença entre a vacina DTP (usada na rede pública infantil) e a DTPa (acelular)?", options: { a: "A DTPa é menos eficaz na produção de anticorpos.", b: "A DTP contém células inteiras da bactéria da coqueluche, sendo mais reatogênica (mais reações adversas); a DTPa contém frações da bactéria, causando menos reações.", c: "A DTP é líquida e a DTPa é em pó liofilizado.", d: "Não há diferença, apenas o laboratório produtor." }, correct: "b" },
+            { id: 25, tag: "dT", text: "Um trabalhador da construção civil apresenta um ferimento perfurante sujo com prego enferrujado. Ele relata ter tomado a última dose da vacina antitetânica (dT) há 8 anos. Qual é a conduta profilática correta?", options: { a: "Não vacinar, pois a validade é de 10 anos.", b: "Administrar uma dose de reforço da vacina dT (pois o ferimento é de alto risco e a vacina tem > 5 anos) + Soro Antitetânico (ou IGAT) dependendo da avaliação médica.", c: "Reiniciar o esquema completo de 3 doses (0, 2, 6 meses).", d: "Apenas lavar o local com água e sabão." }, correct: "b" },
+            { id: 26, tag: "dT", text: "Uma gestante na 22ª semana de gestação chega à unidade com esquema vacinal de dT completo (3 doses), sendo a última há 3 anos. Qual a conduta recomendada pelo PNI para proteção do recém-nascido contra coqueluche?", options: { a: "Não administrar nenhuma vacina, pois o esquema está em dia.", b: "Administrar uma dose de reforço com dT (dupla adulto).", c: "Administrar uma dose da vacina dTpa (Tríplice Bacteriana Acelular do tipo adulto), para transferir anticorpos contra coqueluche ao feto.", d: "Administrar vacina DTP infantil." }, correct: "c" },
+            { id: 27, tag: "dT", text: "Um adulto perdeu o cartão de vacina e não sabe informar se já tomou vacina contra tétano. Qual o esquema a ser iniciado?", options: { a: "Dose única de reforço.", b: "Esquema completo com 3 doses de dT (0, 2 e 6 meses).", c: "Duas doses de dTpa.", d: "Coletar sorologia antes de vacinar." }, correct: "b" },
+            { id: 28, tag: "dT", text: "O que significa o 'd' minúsculo na sigla da vacina dT ou dTpa?", options: { a: "Que a dose deve ser diluída.", b: "Que contém uma quantidade menor de toxoide diftérico em relação à vacina infantil (DTP), para reduzir reações de hipersensibilidade em adultos.", c: "Que a vacina é de vírus 'diminuído'.", d: "Que a vacina protege apenas contra difteria, e não tétano." }, correct: "b" },
+            { id: 29, tag: "Febre Amarela", text: "A vacina contra Febre Amarela é constituída de vírus vivo atenuado. Uma mulher amamentando um bebê de 4 meses precisa viajar para uma área endêmica e deseja se vacinar. Qual a orientação correta conforme o PNI?", options: { a: "Pode vacinar sem restrições, pois o vírus não passa pelo leite.", b: "A vacinação é contraindicada preferencialmente; se o risco epidemiológico justificar a vacinação, ela deve suspender o aleitamento materno por 10 dias após a dose.", c: "Deve vacinar e utilizar máscara N95 ao amamentar.", d: "Deve desmamar a criança definitivamente antes de receber a vacina." }, correct: "b" },
+            { id: 30, tag: "Febre Amarela", text: "Para um viajante internacional que nunca foi vacinado, com quanto tempo de antecedência mínima ele deve receber a vacina de Febre Amarela para que seja considerada válida e protetora na data da viagem?", options: { a: "No dia do embarque.", b: "Pelo menos 10 dias antes da viagem.", c: "30 dias antes da viagem.", d: "24 horas antes da viagem." }, correct: "b" },
+            { id: 31, tag: "Febre Amarela", text: "Qual das condições abaixo configura uma contraindicação absoluta (ou precaução que exige avaliação médica rigorosa) para a vacina de Febre Amarela?", options: { a: "História de reação anafilática confirmada a ovo de galinha e imunossupressão grave.", b: "Resfriado comum sem febre.", c: "História familiar de alergia.", d: "Uso de antibióticos para infecção urinária." }, correct: "a" },
+            { id: 32, tag: "Febre Amarela", text: "Qual a via de administração e a dosagem padrão (dose plena) da vacina Febre Amarela na rotina?", options: { a: "Intramuscular, 1.0 ml.", b: "Subcutânea, 0.5 ml.", c: "Intradérmica, 0.1 ml.", d: "Oral, 2 gotas." }, correct: "b" }
         ],
 
-        // --- MATÉRIA 3: SAÚDE COLETIVA (DOENÇAS TRANSMISSÍVEIS) ---
         doencas: [
             { id: 1, tag: "Rubéola", text: "A rubéola é uma doença exantemática viral aguda. Embora geralmente benigna, sua maior importância em saúde pública deve-se ao risco de:", options: {a: "Evolução para choque séptico viral.", b: "Síndrome da Rubéola Congênita (SRC), causando malformações graves no feto (cegueira, surdez, cardiopatias).", c: "Comprometimento hepático fulminante.", d: "Paralisia flácida aguda permanente."}, correct: "b" },
             { id: 2, tag: "Rubéola", text: "Um sinal clínico característico que frequentemente precede o exantema na rubéola é:", options: {a: "Manchas de Koplik na mucosa oral.", b: "Linfadenopatia retroauricular, occipital e cervical posterior.", c: "Edema de parótida unilateral.", d: "Pseudomembrana acinzentada na orofaringe."}, correct: "b" },
@@ -447,10 +528,6 @@
             { id: 48, tag: "Tétano", text: "O tratamento de um paciente com tétano acidental manifesto exige internação (preferencialmente em UTI), sedação, controle de espasmos e o uso de:", options: {a: "Apenas antibióticos orais.", b: "Imunoglobulina Humana Antitetânica (IGHAT) ou Soro Antitetânico (SAT) para neutralizar a toxina não fixada.", c: "Vacina viral.", d: "Vitamina K."}, correct: "b" }
         ],
 
-        // --- ESPAÇO PARA AS NOVAS MATÉRIAS ---
-        portugues: [],
-        // --- MATÉRIA: PSICOLOGIA ---
-        // prettier-ignore
         psicologia: [
             { id: 1, text: "Segundo a Organização Mundial da Saúde (OMS) e o Estatuto da Criança e do Adolescente (ECA), existem diferentes delimitações etárias para a adolescência. Um técnico de enfermagem precisa conhecer essas definições para adequar seu atendimento. Qual é a diferença entre as definições da OMS e do ECA?", options: { a: "OMS: 10 a 20 anos; ECA: 12 a 18 anos", b: "OMS: 12 a 19 anos; ECA: 10 a 18 anos", c: "OMS: 10 a 18 anos; ECA: 12 a 21 anos", d: "OMS: 11 a 19 anos; ECA: 13 a 18 anos" }, correct: "a" },
             { id: 2, text: "A adolescência é caracterizada por ser uma etapa intermediária do desenvolvimento humano entre a infância e a vida adulta. Um técnico de enfermagem que compreende as dimensões desse processo pode oferecer cuidado mais adequado. Quais são os tipos de transformações que ocorrem durante este período?", options: { a: "Transformações predominantemente físicas com mínimo impacto psicológico", b: "Mudanças comportamentais transitórias sem alterações estruturais significativas", c: "Transformações biológicas, psicológicas, comportamentais e sociais", d: "Alterações hormonais que explicam todas as demais mudanças observadas" }, correct: "c" },
@@ -483,23 +560,57 @@
             { id: 29, text: "O envelhecimento saudável envolve múltiplas dimensões que vão além da ausência de doenças. Uma unidade de saúde está desenvolvendo um programa para promover envelhecimento saudável na comunidade. Quais aspectos são fundamentais para promover envelhecimento saudável segundo os materiais?", options: { a: "Atividade física regular, alimentação balanceada, controle de doenças e vida social ativa", b: "Prevenção de quedas, acompanhamento médico, medicação adequada e suporte familiar", c: "Manutenção de relações sociais e familiares, adoção de hábitos de vida saudáveis, prevenção de doenças crônicas e participação em atividades sociais, culturais e de lazer", d: "Estímulo cognitivo, exercícios físicos, nutrição adequada e gerenciamento de doenças crônicas" }, correct: "c" },
             { id: 30, text: "A hospitalização do idoso pode desencadear repercussões emocionais significativas como medo, ansiedade, solidão, confusão mental e perda de autoestima. Como a equipe de enfermagem pode atuar para minimizar o sofrimento psicológico do idoso hospitalizado segundo os materiais?", options: { a: "Orientação aos familiares, ambiente adaptado, comunicação acessível e cuidado respeitoso", b: "Presença familiar constante, informação adequada, atenção às necessidades individuais e empatia", c: "Oferecer comunicação clara e constante, apoio emocional, cuidado individualizado, respeitar a autonomia e trabalho interdisciplinar", d: "Estabelecer rotina estruturada, envolver a família, personalizar assistência e equipe multiprofissional integrada" }, correct: "c" }
         ],
+
+        portugues: [
+            { id: 1, text: "Um técnico de enfermagem ouve dois pacientes conversando. O primeiro diz: 'Eu necessito realizar alguns exames...', o segundo: 'Eu preciso fazê uns exame...'. Essa diferença representa qual variação linguística?", options: { a: "Variação diatópica, relacionada às diferenças regionais", b: "Variação diastrática ou social, decorrente do grau de escolarização e formação cultural", c: "Variação diacrônica, relacionada às mudanças no tempo", d: "Variação diafásica, relacionada ao contexto situacional" }, correct: "b" },
+            { id: 2, text: "Um texto do século XIX utiliza termos como 'botica' (farmácia) e 'sangria'. Essas diferenças vocabulares em relação ao português atual exemplificam qual variação?", options: { a: "Variação geográfica", b: "Variação social", c: "Variação diacrônica ou histórica, resultado das mudanças da língua ao longo do tempo", d: "Variação situacional" }, correct: "c" },
+            { id: 3, text: "Pacientes de diferentes estados pedem 'bergamota', 'tangerina' ou 'mexerica' para a mesma fruta. Esse fenômeno caracteriza qual variação?", options: { a: "Variação diafásica", b: "Variação diastrática", c: "Variação diatópica ou geográfica, decorrente das diferenças regionais de vocabulário", d: "Variação histórica" }, correct: "c" },
+            { id: 4, text: "Uma técnica diz à colega: 'Tô morrendo de cansaço!'. À coordenadora, diz: 'O plantão está transcorrendo normalmente'. Essa mudança representa qual variação?", options: { a: "Variação geográfica", b: "Variação histórica", c: "Variação social", d: "Variação diafásica ou situacional, ajustada ao contexto e ao destinatário da mensagem" }, correct: "d" },
+            { id: 5, text: "Técnicos de diferentes regiões usam expressões como 'bah, tchê', 'mano' e 'uai'. Essas marcas caracterizam qual variação?", options: { a: "Variação social", b: "Variação geográfica ou regional, evidenciada por expressões típicas de cada localidade", c: "Variação situacional", d: "Variação histórica" }, correct: "b" },
+            { id: 6, text: "Prontuários de 1920 usam termos como 'tisica' e 'mal dos nervos'. Comparado à terminologia atual, isso ilustra qual variação?", options: { a: "Variação situacional", b: "Variação histórica ou diacrônica, demonstrando a evolução da língua através dos séculos", c: "Variação geográfica", d: "Variação social" }, correct: "b" },
+            { id: 7, text: "Um médico diz ao paciente: 'Pressão alta'. A outro médico: 'Hipertensão arterial sistêmica'. Essa adaptação representa qual variação?", options: { a: "Variação situacional ou diafásica, que se origina em função da situação contextual e do destinatário", b: "Variação social", c: "Variação profissional", d: "Variação geográfica" }, correct: "a" },
+            { id: 8, text: "Uma enfermeira usa vocabulário técnico preciso, enquanto um auxiliar com menor escolaridade apresenta dificuldades gramaticais. Isso caracteriza qual variação?", options: { a: "Variação diatópica", b: "Variação diastrática ou social, dependente do grau de escolarização e formação", c: "Variação histórica", d: "Variação situacional" }, correct: "b" },
+            { id: 9, text: "Qual conceito é definido como um complexo sistema de sons e sinais, homogêneo, exterior ao indivíduo e que constitui a parte social da linguagem?", options: { a: "Língua", b: "Fala", c: "Linguagem", d: "Discurso" }, correct: "a" },
+            { id: 10, text: "Segundo os materiais estudados, qual das alternativas descreve corretamente a FALA?", options: { a: "Sistema exterior ao indivíduo", b: "Utilização da língua pelos diferentes falantes, ato intencional, individual, de vontade e de inteligência", c: "Instrumento de interação mútua", d: "Sistema homogêneo de signos" }, correct: "b" },
+            { id: 11, text: "Qual é a definição correta de LINGUAGEM segundo os slides?", options: { a: "Sistema de signos convencionais", b: "Ato individual de vontade", c: "Processo comunicativo pelo qual as pessoas interagem entre si (instrumento de interação)", d: "Parte social exterior ao indivíduo" }, correct: "c" },
+            { id: 12, text: "Um prontuário descreve: 'Paciente masculino, 45 anos, febre de 38,5°C. Diagnóstico: pneumonia'. Esse registro exemplifica qual função da linguagem?", options: { a: "Função referencial ou denotativa, centrada na mensagem com preocupação de informar objetivamente", b: "Função emotiva", c: "Função conativa", d: "Função fática" }, correct: "a" },
+            { id: 13, text: "Uma enfermeira desabafa: 'Estou exausta! Não aguento mais! Preciso de ajuda!'. O uso da 1ª pessoa e expressão de sentimentos caracteriza qual função?", options: { a: "Função referencial", b: "Função emotiva ou expressiva, centrada no emissor e marcada por opiniões e sentimentos", c: "Função conativa", d: "Função fática" }, correct: "b" },
+            { id: 14, text: "Ao telefone: 'Alô? Está me ouvindo? Sim?'. Essa interação exemplifica qual função da linguagem?", options: { a: "Função referencial", b: "Função emotiva", c: "Função fática, que tem por finalidade verificar se o canal de comunicação está funcionando", d: "Função conativa" }, correct: "c" },
+            { id: 15, text: "Cartaz de vacinação: 'Vacine-se! Proteja sua família!'. O uso do imperativo e persuasão caracteriza qual função?", options: { a: "Função referencial", b: "Função emotiva", c: "Função metalinguística", d: "Função conativa ou persuasiva, direcionada ao destinatário para convencer e persuadir" }, correct: "d" },
+            { id: 16, text: "Um professor explica: 'O termo taquicardia vem do grego tachys (rápido) + kardia (coração)'. Explicar o código pelo próprio código é qual função?", options: { a: "Função referencial", b: "Função metalinguística, centrada na explicação do próprio código empregado", c: "Função emotiva", d: "Função conativa" }, correct: "b" },
+            { id: 17, text: "Um poema no mural: 'Cuida com carinho... Alivia a dor...'. O uso de rimas e ritmo caracteriza qual função?", options: { a: "Função referencial", b: "Função emotiva", c: "Função conativa", d: "Função poética, que valoriza a elaboração da mensagem através de efeitos rítmicos" }, correct: "d" },
+            { id: 18, text: "Enfermeira diz: 'Aquele paciente é uma pedra'. A expressão 'é uma pedra' exemplifica qual figura de linguagem?", options: { a: "Metáfora, que representa comparação implícita entre termos com significados diferentes", b: "Comparação", c: "Metonímia", d: "Hipérbole" }, correct: "a" },
+            { id: 19, text: "'Atendi um milhão de pacientes hoje! Estou morrendo de cansaço!'. Essas expressões caracterizam qual figura?", options: { a: "Metáfora", b: "Hipérbole, que corresponde ao exagero intencional de uma ideia", c: "Prosopopeia", d: "Antítese" }, correct: "b" },
+            { id: 20, text: "'A pressão oscilou como uma gangorra'. O uso do conectivo 'como' caracteriza qual figura?", options: { a: "Metáfora", b: "Comparação, que é explícita através da utilização de conectivos de comparação", c: "Personificação", d: "Metonímia" }, correct: "b" },
+            { id: 21, text: "'As paredes testemunharam... O estetoscópio escutou...'. Atribuir ações humanas a objetos é qual figura?", options: { a: "Metáfora", b: "Hipérbole", c: "Prosopopeia ou personificação, atribuindo qualidades humanas a objetos inanimados", d: "Metonímia" }, correct: "c" },
+            { id: 22, text: "'Convivemos com a vida e a morte, alegria e tristeza'. Termos opostos caracterizam qual figura?", options: { a: "Paradoxo", b: "Antítese, que utiliza termos que têm sentidos opostos", c: "Ironia", d: "Eufemismo" }, correct: "b" },
+            { id: 23, text: "'Li Florence Nightingale' (substituindo a obra pelo autor). Essa substituição caracteriza qual figura?", options: { a: "Metáfora", b: "Sinédoque", c: "Metonímia, que é a transposição de significados considerando autor pela obra", d: "Catacrese" }, correct: "c" },
+            { id: 24, text: "'A vida grita no silêncio... Cheios de vazio...'. Ideias contraditórias na mesma expressão caracterizam qual figura?", options: { a: "Antítese", b: "Paradoxo, que representa o uso de ideias que têm sentidos opostos na mesma expressão", c: "Ironia", d: "Hipérbole" }, correct: "b" },
+            { id: 25, text: "Técnico relata verbalmente o plantão à equipe. Isso caracteriza qual modalidade de linguagem?", options: { a: "Linguagem verbal oral, usada para transmitir informações e relatar fatos", b: "Linguagem não verbal corporal", c: "Linguagem verbal escrita", d: "Linguagem cromática" }, correct: "a" },
+            { id: 26, text: "Paciente diz estar bem, mas tem punhos cerrados e testa franzida. Essa leitura de sinais é qual tipo de linguagem?", options: { a: "Linguagem verbal oral", b: "Linguagem não verbal corporal, que utiliza expressões faciais, gestos e postura", c: "Linguagem mista", d: "Linguagem paraverbal" }, correct: "b" },
+            { id: 27, text: "Hospital substitui 'hipertermia' por 'febre alta' em folhetos. Isso se alinha com qual conceito?", options: { a: "Linguagem técnica", b: "Linguagem coloquial", c: "Linguagem simples (Plain Language), tornando textos mais fáceis de ler e entender", d: "Linguagem infantilizada" }, correct: "c" },
+            { id: 28, text: "Paciente com braços cruzados, sem contato visual e sobrancelhas abaixadas. O que esses sinais podem indicar?", options: { a: "Surpresa e alegria", b: "Conforto e relaxamento", c: "Resistência, desconforto ou estado emotivo negativo como tensão", d: "Timidez natural" }, correct: "c" },
+            { id: 29, text: "Hospital implementa intérpretes de Libras. Isso se relaciona com qual tipo de linguagem?", options: { a: "Linguagem mímica", b: "Linguagem inclusiva, tornando a comunicação acessível a todos", c: "Linguagem não verbal genérica", d: "Linguagem gestual informal" }, correct: "b" },
+            { id: 30, text: "Enfermeiro usa linguagem culta na palestra e gírias com colegas depois. Isso caracteriza quais modalidades?", options: { a: "Língua escrita literária e não-literária", b: "Língua culta/formal e língua coloquial/informal, demonstrando registros diferentes", c: "Língua vulgar e padrão", d: "Dialeto e linguagem técnica" }, correct: "b" }
+        ],
+
         ambiental: [],
         organizacional: []
     };
 
-    /* ==============================================================
-       LÓGICA DO SISTEMA 
-       ============================================================== */
-    
+    /* --- LÓGICA DO APP --- */
     let materiaAtual = '';
     let respostasUsuario = {};
 
-    // Atualiza botões do menu com base no conteúdo
     function verificarConteudo() {
-        if(bancoDeQuestoes.psicologia.length > 0) document.getElementById('btn-psicologia').classList.remove('disabled');
-        if(bancoDeQuestoes.ambiental.length > 0) document.getElementById('btn-ambiental').classList.remove('disabled');
-        if(bancoDeQuestoes.organizacional.length > 0) document.getElementById('btn-organizacional').classList.remove('disabled');
-        if(bancoDeQuestoes.portugues.length > 0) document.getElementById('btn-portugues').classList.remove('disabled');
+        // Verifica quais matérias têm questões e ativa os botões
+        const materias = ['portugues', 'psicologia', 'ambiental', 'organizacional'];
+        materias.forEach(m => {
+            if (bancoDeQuestoes[m] && bancoDeQuestoes[m].length > 0) {
+                const btn = document.getElementById(`btn-${m}`);
+                if(btn) btn.classList.remove('disabled');
+            }
+        });
     }
 
     function mostrarTela(idTela) {
@@ -512,32 +623,35 @@
         materiaAtual = materia;
         respostasUsuario = {};
         
-        // Definir título
         const titulos = {
             'relacoes': 'Relações Humanas',
             'coletiva': 'Saúde Coletiva (Vacinas)',
             'doencas': 'Saúde Coletiva (Doenças)',
             'psicologia': 'Psicologia',
-            'ambiental': 'Saúde Ambiental',
             'portugues': 'Língua Portuguesa',
+            'ambiental': 'Saúde Ambiental',
             'organizacional': 'Processos Organizacionais'
         };
         document.getElementById('quiz-title').innerText = titulos[materia];
 
-        // Renderizar questões
+        // Exibir/Ocultar Resumo de Português
+        const resumoPort = document.getElementById('resumo-portugues');
+        if (resumoPort) {
+            resumoPort.style.display = (materia === 'portugues') ? 'block' : 'none';
+        }
+
         const container = document.getElementById('questions-container');
         container.innerHTML = '';
 
         const questoes = bancoDeQuestoes[materia];
 
         if (!questoes || questoes.length === 0) {
-            alert("Questões ainda não disponíveis para esta matéria.");
-            return;
+            alert("Conteúdo em breve!");
+            return; // Não muda de tela se estiver vazio
         }
 
         questoes.forEach((q, index) => {
             const tagHtml = q.tag ? `<span class="badge">${q.tag}</span>` : '';
-            
             const div = document.createElement('div');
             div.className = 'question-block';
             div.innerHTML = `
@@ -556,13 +670,9 @@
     }
 
     function selecionarOpcao(indexQuestao, opcao, btnElement) {
-        // Salva resposta
         respostasUsuario[indexQuestao] = opcao;
-
-        // Visual
         const parent = btnElement.parentElement;
-        const botoes = parent.querySelectorAll('.option-btn');
-        botoes.forEach(btn => btn.classList.remove('selected'));
+        parent.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('selected'));
         btnElement.classList.add('selected');
     }
 
@@ -591,21 +701,19 @@
             
             let status = acertou 
                 ? `<span class="status-correct">✔ Correto</span>` 
-                : `<span class="status-wrong">✖ Incorreto (Sua resposta: ${respUser ? respUser.toUpperCase() : 'Nenhuma'})</span>`;
+                : `<span class="status-wrong">✖ Incorreto (Você marcou: ${respUser ? respUser.toUpperCase() : 'Nada'})</span>`;
 
             div.innerHTML = `
                 <div><strong>${index + 1}.</strong> ${q.text}</div>
-                <div style="margin-top:5px;">${status}</div>
+                <div style="margin-top:8px;">${status}</div>
                 ${!acertou ? `<div class="explanation"><strong>Gabarito: ${correta.toUpperCase()}</strong> - ${q.options[correta]}</div>` : ''}
             `;
             container.appendChild(div);
         });
 
         const porcentagem = Math.round((acertos / total) * 100);
-        document.getElementById('final-score').innerHTML = `
-            Nota: ${porcentagem}%<br>
-            <span style="font-size:0.7em; color:#555">Acertos: ${acertos} de ${total}</span>
-        `;
+        document.getElementById('final-score-display').innerText = `${porcentagem}%`;
+        document.getElementById('final-score-text').innerText = `Você acertou ${acertos} de ${total} questões`;
 
         mostrarTela('result-screen');
     }
