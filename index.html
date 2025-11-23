@@ -5,71 +5,51 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Hub de Estudos - Enfermagem</title>
     <style>
-        /* --- RESET & VARIÁVEIS --- */
+        /* --- 1. VARIÁVEIS E RESET --- */
         :root {
             --primary: #005b96;       /* Azul Institucional */
             --primary-dark: #003f6b;
             --accent: #009688;        /* Verde Saúde */
-            --bg-body: #f0f2f5;       /* Cinza bem claro (fundo de app) */
-            --surface: #ffffff;       /* Branco puro */
-            --text-main: #333333;
-            --text-muted: #666666;
-            --correct: #2e7d32;       /* Verde Sucesso */
-            --wrong: #c62828;         /* Vermelho Erro */
-            --shadow: 0 4px 12px rgba(0,0,0,0.08);
-            --radius: 12px;
+            --bg-body: #f2f4f8;       /* Fundo cinza suave */
+            --surface: #ffffff;       /* Branco */
+            --text-main: #2c3e50;
+            --text-muted: #7f8c8d;
+            --correct: #27ae60;       /* Verde Sucesso */
+            --wrong: #c0392b;         /* Vermelho Erro */
+            --radius: 16px;
+            --shadow: 0 4px 20px rgba(0,0,0,0.06);
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--bg-body);
             color: var(--text-main);
             margin: 0;
-            padding: 15px;
+            padding: 20px 15px;
             line-height: 1.6;
         }
 
-        /* --- CONTAINER PRINCIPAL --- */
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            padding-bottom: 40px;
-        }
+        .container { max-width: 850px; margin: 0 auto; padding-bottom: 60px; }
 
-        /* --- CABEÇALHOS --- */
-        h1 {
-            color: var(--primary);
-            font-size: 1.8rem;
-            text-align: center;
-            margin-bottom: 5px;
-            letter-spacing: -0.5px;
-        }
-
-        .subtitle {
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 0.95rem;
-            margin-bottom: 30px;
-        }
-
-        /* --- TELAS (GERENCIAMENTO) --- */
-        .screen { display: none; animation: fadeIn 0.3s ease; }
+        /* --- 2. TIPOGRAFIA E CABEÇALHOS --- */
+        h1 { color: var(--primary); font-size: 1.75rem; text-align: center; margin: 0 0 5px 0; letter-spacing: -0.5px; }
+        .subtitle { text-align: center; color: var(--text-muted); font-size: 0.95rem; margin-bottom: 35px; }
+        
+        /* --- 3. TELAS E ANIMAÇÃO --- */
+        .screen { display: none; animation: slideUp 0.3s ease-out; }
         .active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- MENU (GRID) --- */
+        /* --- 4. MENU PRINCIPAL --- */
         .menu-grid {
             display: grid;
-            grid-template-columns: 1fr; /* Mobile: 1 coluna */
+            grid-template-columns: 1fr;
             gap: 15px;
             margin-bottom: 40px;
         }
-
-        @media (min-width: 600px) {
-            .menu-grid { grid-template-columns: repeat(2, 1fr); } /* PC: 2 colunas */
-        }
+        @media (min-width: 600px) { .menu-grid { grid-template-columns: 1fr 1fr; } }
 
         .menu-btn {
             background: var(--surface);
@@ -81,163 +61,105 @@
             border-radius: var(--radius);
             box-shadow: var(--shadow);
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
             display: flex;
             align-items: center;
             justify-content: center;
             text-align: center;
-            position: relative;
-            overflow: hidden;
         }
-
+        
+        .menu-btn::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 5px; background: var(--primary); transition: 0.2s; }
+        .menu-btn:hover:not(.disabled) { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,91,150,0.15); }
         .menu-btn:active { transform: scale(0.98); }
-        .menu-btn:hover:not(.disabled) { transform: translateY(-3px); box-shadow: 0 6px 16px rgba(0,91,150,0.2); }
         
-        /* Indicador visual lateral no botão */
-        .menu-btn::before {
-            content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 6px; background: var(--primary);
-        }
+        .menu-btn.disabled { background: #eef1f5; color: #bdc3c7; cursor: not-allowed; box-shadow: none; }
+        .menu-btn.disabled::before { background: #bdc3c7; }
 
-        .menu-btn.disabled {
-            background: #e0e0e0;
-            color: #999;
-            cursor: not-allowed;
-            box-shadow: none;
-        }
-        .menu-btn.disabled::before { background: #bdbdbd; }
-
-        /* --- ÁREA DE QUIZ --- */
-        .header-nav {
-            display: flex;
-            align-items: center;
-            background: var(--surface);
-            padding: 15px;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            margin-bottom: 20px;
-            position: sticky;
-            top: 10px;
-            z-index: 100;
-        }
-
-        .back-arrow {
-            background: none; border: none; font-size: 1.5rem; color: var(--text-muted);
-            cursor: pointer; padding: 5px 15px 5px 5px; margin-right: 10px;
-            border-right: 1px solid #eee;
-        }
-
-        .question-block {
-            background: var(--surface);
-            padding: 20px;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            margin-bottom: 25px;
-        }
-
-        .question-title {
-            font-size: 1.1rem;
-            font-weight: 700;
-            margin-bottom: 20px;
-            color: #222;
-        }
-
-        .badge {
-            background: var(--accent); color: white;
-            padding: 3px 8px; border-radius: 6px;
-            font-size: 0.75rem; vertical-align: middle;
-            margin-right: 8px; display: inline-block; margin-bottom: 5px;
-        }
-
-        .option-btn {
-            display: block; width: 100%;
-            padding: 16px;
-            margin-bottom: 12px;
-            text-align: left;
-            background: #f8f9fa;
-            border: 2px solid transparent;
-            border-radius: 8px;
-            font-size: 1rem;
-            color: var(--text-main);
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .option-btn:hover { background: #eef2f5; }
-        .option-btn.selected {
-            background: #e3f2fd;
-            border-color: var(--primary);
-            color: var(--primary-dark);
-            font-weight: 500;
-        }
-
-        /* --- BOTÕES DE AÇÃO (Finalizar/Voltar) --- */
-        .action-btn {
-            width: 100%;
-            padding: 18px;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: var(--radius);
-            font-size: 1.1rem;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0,91,150,0.3);
-            margin-top: 10px;
-        }
-        .action-btn:active { transform: scale(0.98); }
-        .back-btn { background: #78909c; box-shadow: none; margin-top: 15px; }
-
-        /* --- CARDS INFORMATIVOS (Resumos) --- */
+        /* --- 5. CARDS DE INFORMAÇÃO (Resumos) --- */
         .info-section { margin-top: 30px; }
-        .info-header h2 { font-size: 1.2rem; color: var(--text-main); border-left: 5px solid var(--accent); padding-left: 15px; margin-bottom: 20px; }
-        
-        .info-grid {
-            display: grid; grid-template-columns: 1fr; gap: 15px;
-        }
-        @media (min-width: 768px) { .info-grid { grid-template-columns: repeat(2, 1fr); } }
+        .info-header h2 { font-size: 1.2rem; color: var(--text-main); border-left: 5px solid var(--accent); padding-left: 15px; margin-bottom: 5px; }
+        .info-header p { font-size: 0.9rem; color: var(--text-muted); margin: 0 0 20px 20px; }
+
+        .info-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+        @media (min-width: 768px) { .info-grid { grid-template-columns: 1fr 1fr; } }
 
         .info-card {
             background: var(--surface);
             padding: 15px;
-            border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
             border-left: 4px solid #ddd;
         }
-
+        
         .info-title-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-        .info-disease { font-weight: bold; color: #444; font-size: 0.95rem; }
-        .info-content { font-size: 0.9rem; color: #666; }
+        .info-disease { font-weight: 700; color: #333; font-size: 0.95rem; }
+        .info-content { font-size: 0.85rem; color: #555; line-height: 1.4; }
+        .info-content ul li { margin-bottom: 6px; }
 
-        /* Cores das Tags */
-        .tag { padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: bold; color: white; text-transform: uppercase; }
-        .tag-imediata { background: #e53935; }
-        .tag-semanal { background: #fbc02d; color: #444; }
-        .tag-surtos { background: #8e24aa; }
-        .tag-misto { background: #546e7a; }
+        /* Etiquetas */
+        .tag { padding: 3px 10px; border-radius: 12px; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; color: white; }
+        .tag-imediata { background: #e74c3c; }
+        .tag-semanal { background: #f1c40f; color: #444; }
+        .tag-surtos { background: #9b59b6; }
+        .tag-misto { background: #34495e; }
 
-        /* --- RESULTADOS --- */
-        .score-board {
-            background: var(--surface);
-            padding: 30px;
-            border-radius: var(--radius);
-            text-align: center;
-            box-shadow: var(--shadow);
+        /* --- 6. TELA DO QUIZ --- */
+        .header-nav {
+            display: flex; align-items: center;
+            background: var(--surface); padding: 15px;
+            border-radius: var(--radius); box-shadow: var(--shadow);
+            margin-bottom: 20px; position: sticky; top: 10px; z-index: 100;
+        }
+        .back-arrow {
+            background: none; border: none; font-size: 1.8rem; color: var(--primary);
+            cursor: pointer; padding-right: 15px; margin-right: 10px; border-right: 1px solid #eee;
+            line-height: 1;
+        }
+
+        .question-block {
+            background: var(--surface); padding: 25px;
+            border-radius: var(--radius); box-shadow: var(--shadow);
             margin-bottom: 25px;
         }
-        .score-number { font-size: 2.5rem; font-weight: 800; color: var(--primary); display: block; }
+        .question-title { font-size: 1.05rem; font-weight: 700; margin-bottom: 20px; color: #2c3e50; }
+        .badge { background: var(--accent); color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; vertical-align: middle; margin-right: 8px; }
+
+        .option-btn {
+            display: block; width: 100%; padding: 15px; margin-bottom: 10px; text-align: left;
+            background: #f8f9fa; border: 2px solid transparent; border-radius: 10px;
+            font-size: 0.95rem; color: #444; cursor: pointer; transition: 0.2s;
+        }
+        .option-btn:hover { background: #e8eaf6; }
+        .option-btn.selected { background: #e3f2fd; border-color: var(--primary); color: var(--primary-dark); font-weight: 600; }
+
+        /* Botões de Ação */
+        .action-btn {
+            width: 100%; padding: 18px; background: var(--primary); color: white;
+            border: none; border-radius: var(--radius); font-size: 1.1rem; font-weight: 700;
+            cursor: pointer; box-shadow: 0 4px 15px rgba(0,91,150,0.3); margin-top: 10px;
+        }
+        .action-btn:active { transform: scale(0.98); }
+        .back-btn { background: #95a5a6; box-shadow: none; margin-top: 15px; }
+
+        /* --- 7. RESULTADOS --- */
+        .score-board {
+            background: var(--surface); padding: 30px; border-radius: var(--radius);
+            text-align: center; box-shadow: var(--shadow); margin-bottom: 25px;
+        }
+        .score-val { font-size: 3rem; font-weight: 800; color: var(--primary); line-height: 1; }
         
         .result-card {
-            background: var(--surface); padding: 15px; margin-bottom: 15px;
-            border-radius: 8px; border-left: 5px solid #ddd;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            background: var(--surface); padding: 15px; margin-bottom: 12px;
+            border-radius: 10px; border-left: 6px solid #ddd; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
         .result-card.correct { border-left-color: var(--correct); }
         .result-card.wrong { border-left-color: var(--wrong); }
         
-        .status-correct { color: var(--correct); font-weight: bold; }
-        .status-wrong { color: var(--wrong); font-weight: bold; }
-        .explanation { background: #f1f8e9; padding: 10px; margin-top: 10px; border-radius: 6px; font-size: 0.9rem; color: #33691e; }
-
+        .status-correct { color: var(--correct); font-weight: bold; font-size: 0.9rem; }
+        .status-wrong { color: var(--wrong); font-weight: bold; font-size: 0.9rem; }
+        .explanation { background: #f1f8e9; padding: 12px; margin-top: 10px; border-radius: 8px; font-size: 0.9rem; color: #2e7d32; }
     </style>
 </head>
 <body>
@@ -252,7 +174,7 @@
         <button class="menu-btn" onclick="iniciarQuiz('doencas')">Saúde Coletiva (Doenças)</button>
         <button class="menu-btn" onclick="iniciarQuiz('psicologia')">Psicologia</button>
         
-        <button class="menu-btn disabled" id="btn-portugues" onclick="iniciarQuiz('portugues')">Português Instrumental</button>
+        <button class="menu-btn disabled" id="btn-portugues" onclick="iniciarQuiz('portugues')">Língua Portuguesa</button>
         <button class="menu-btn disabled" id="btn-ambiental" onclick="iniciarQuiz('ambiental')">Saúde Ambiental (Em breve)</button>
         <button class="menu-btn disabled" id="btn-organizacional" onclick="iniciarQuiz('organizacional')">Processos Organiz. (Em breve)</button>
     </div>
@@ -260,129 +182,124 @@
     <div class="info-section">
         <div class="info-header">
             <h2>⚡ Notificações Compulsórias</h2>
+            <p>Guia rápido de vigilância (MS)</p>
         </div>
 
         <div class="info-grid">
-            <div class="info-card" style="border-left-color: #e53935;">
+            <div class="info-card" style="border-left-color: #e74c3c;">
                 <div class="info-title-row"><span class="info-disease">Rubéola</span><span class="tag tag-imediata">Imediata (24h)</span></div>
-                <div class="info-content">Notificar e investigar suspeitos em até 24h.</div>
+                <div class="info-content">Notificar suspeitos em até 24h. Investigação obrigatória.</div>
             </div>
-            <div class="info-card" style="border-left-color: #e53935;">
+            <div class="info-card" style="border-left-color: #e74c3c;">
                 <div class="info-title-row"><span class="info-disease">Sarampo</span><span class="tag tag-imediata">Imediata (24h)</span></div>
-                <div class="info-content">Notificar suspeitos em 24h + Investigação Obrigatória.</div>
+                <div class="info-content">Notificar em 24h + Investigação Epidemiológica.</div>
             </div>
-            <div class="info-card" style="border-left-color: #e53935;">
+            <div class="info-card" style="border-left-color: #e74c3c;">
                 <div class="info-title-row"><span class="info-disease">Difteria</span><span class="tag tag-imediata">Imediata (24h)</span></div>
-                <div class="info-content">Notificação imediata e investigação epidemiológica.</div>
+                <div class="info-content">Suspeitos exigem notificação e investigação imediatas.</div>
             </div>
-            <div class="info-card" style="border-left-color: #e53935;">
+            <div class="info-card" style="border-left-color: #e74c3c;">
                 <div class="info-title-row"><span class="info-disease">Meningite</span><span class="tag tag-imediata">Imediata (24h)</span></div>
-                <div class="info-content">Suspeita de Doença Meningocócica ou Haemophilus.</div>
+                <div class="info-content">Doença Meningocócica ou Haemophilus: Imediata.</div>
             </div>
-            <div class="info-card" style="border-left-color: #e53935;">
+            <div class="info-card" style="border-left-color: #e74c3c;">
                 <div class="info-title-row"><span class="info-disease">Raiva Humana</span><span class="tag tag-imediata">Imediata (24h)</span></div>
-                <div class="info-content">Todo caso humano suspeito e acidentes graves.</div>
+                <div class="info-content">Casos suspeitos e acidentes graves com animais.</div>
             </div>
-            <div class="info-card" style="border-left-color: #e53935;">
+            <div class="info-card" style="border-left-color: #e74c3c;">
                 <div class="info-title-row"><span class="info-disease">Febre Amarela</span><span class="tag tag-imediata">Imediata (24h)</span></div>
                 <div class="info-content">Suspeitos com febre, icterícia e/ou hemorragias.</div>
             </div>
-            <div class="info-card" style="border-left-color: #546e7a;">
+            
+            <div class="info-card" style="border-left-color: #34495e;">
                 <div class="info-title-row"><span class="info-disease">Tétano</span><span class="tag tag-misto">Misto</span></div>
-                <div class="info-content">Neonatal: Imediata (24h) | Acidental: Semanal.</div>
+                <div class="info-content"><strong>Neonatal:</strong> Imediata (24h).<br><strong>Acidental:</strong> Semanal.</div>
             </div>
-            <div class="info-card" style="border-left-color: #fbc02d;">
+
+            <div class="info-card" style="border-left-color: #f1c40f;">
                 <div class="info-title-row"><span class="info-disease">Coqueluche</span><span class="tag tag-semanal">Semanal</span></div>
                 <div class="info-content">Casos confirmados: notificação semanal.</div>
             </div>
-            <div class="info-card" style="border-left-color: #fbc02d;">
+            <div class="info-card" style="border-left-color: #f1c40f;">
                 <div class="info-title-row"><span class="info-disease">Hanseníase</span><span class="tag tag-semanal">Semanal</span></div>
                 <div class="info-content">Casos novos diagnosticados.</div>
             </div>
-            <div class="info-card" style="border-left-color: #fbc02d;">
+            <div class="info-card" style="border-left-color: #f1c40f;">
                 <div class="info-title-row"><span class="info-disease">Tuberculose</span><span class="tag tag-semanal">Semanal</span></div>
                 <div class="info-content">Casos confirmados (acompanhar até a cura).</div>
             </div>
-            <div class="info-card" style="border-left-color: #fbc02d;">
+            <div class="info-card" style="border-left-color: #f1c40f;">
                 <div class="info-title-row"><span class="info-disease">Hepatites Virais</span><span class="tag tag-semanal">Semanal</span></div>
-                <div class="info-content">Casos confirmados ou inconclusivos (A, B, C, D, E).</div>
+                <div class="info-content">Confirmados ou inconclusivos (A, B, C, D, E).</div>
             </div>
-            <div class="info-card" style="border-left-color: #8e24aa;">
+
+            <div class="info-card" style="border-left-color: #9b59b6;">
                 <div class="info-title-row"><span class="info-disease">Caxumba</span><span class="tag tag-surtos">Surtos</span></div>
-                <div class="info-content">Nacional: Surtos. Estadual: Pode variar.</div>
+                <div class="info-content">Nacional: Surtos. (Estados podem exigir individual).</div>
             </div>
         </div>
     </div>
 </div>
 
 <div class="container screen" id="quiz-screen">
+    
     <div class="header-nav">
         <button class="back-arrow" onclick="voltarAoMenu()">&#8592;</button>
         <h2 id="quiz-title" style="margin:0; font-size:1.2rem; color:var(--primary);">Matéria</h2>
     </div>
 
-   <div id="resumo-portugues" class="info-section" style="display: none; margin-bottom: 30px; border-top: none;">
+    <div id="resumo-portugues" class="info-section" style="display: none; margin-bottom: 30px; border-top: none; margin-top:0;">
         <div class="info-header">
-            <h2 style="font-size: 1.1em; color: var(--accent);">📚 Resumo Explicativo: Gramática</h2>
-            <p style="font-size: 0.85rem; color: #666; margin-top: -10px;">Para quem nunca entendeu essas regras antes:</p>
+            <h2 style="font-size: 1.1em; color: var(--accent);">📚 Resumo Didático: Gramática</h2>
+            <p style="margin:0;">Para entender o básico antes de começar:</p>
         </div>
 
         <div class="info-grid">
-            <div class="info-card">
-                <div class="info-title-row">
-                    <span class="info-disease">1. Variações (Mudanças na Língua)</span>
-                </div>
-                <div class="info-content" style="font-size: 0.85em;">
+            <div class="info-card" style="border-left-color: var(--primary);">
+                <div class="info-title-row"><span class="info-disease">1. Modalidades e Variações</span></div>
+                <div class="info-content">
                     <ul style="padding-left: 15px; margin: 0; list-style: none;">
-                        <li style="margin-bottom: 8px;">
-                            🗺️ <strong>Geográfica (Diatópica):</strong> Muda de acordo com a <em>região</em>.<br>
-                            <span style="color:#555;">Ex: Em SP é "Mandioca", no Nordeste é "Macaxeira".</span>
-                        </li>
-                        <li style="margin-bottom: 8px;">
-                            ⏳ <strong>Histórica (Diacrônica):</strong> Muda com o passar do <em>tempo</em>.<br>
-                            <span style="color:#555;">Ex: Antigamente diziam "Vossa Mercê", hoje dizem "Você".</span>
-                        </li>
-                        <li style="margin-bottom: 8px;">
-                            👥 <strong>Social (Diastrática):</strong> Muda conforme o grupo social ou escolaridade.<br>
-                            <span style="color:#555;">Ex: O médico diz "Cefaleia", o paciente diz "Dor de cabeça".</span>
-                        </li>
-                        <li>
-                            👔 <strong>Situacional (Diafásica):</strong> Muda dependendo do momento (Formal vs Informal).<br>
-                            <span style="color:#555;">Ex: Falar com um juiz vs falar com um amigo no bar.</span>
-                        </li>
+                        <li style="margin-bottom: 5px;">🗣️ <strong>Verbal Oral:</strong> Falada/Espontânea (Ex: Plantão).</li>
+                        <li style="margin-bottom: 5px;">📝 <strong>Verbal Escrita:</strong> Documentada/Rígida (Ex: Prontuário).</li>
+                        <li style="margin-bottom: 5px;">🚫 <strong>Não Verbal:</strong> Sem palavras (Ex: Gestos).</li>
+                        <li style="margin-bottom: 5px;">🔄 <strong>Mista:</strong> Palavra + Imagem.</li>
+                        <hr style="border:0; border-top:1px dashed #ccc; margin:8px 0;">
+                        <li style="margin-bottom: 5px;">🎩 <strong>Nível Culto:</strong> Gramática correta.</li>
+                        <li style="margin-bottom: 5px;">🧢 <strong>Nível Coloquial:</strong> Gírias/Dia a dia.</li>
+                        <hr style="border:0; border-top:1px dashed #ccc; margin:8px 0;">
+                        <li style="margin-bottom: 5px;">🗺️ <strong>Geográfica (Diatópica):</strong> Muda por região.</li>
+                        <li style="margin-bottom: 5px;">⏳ <strong>Histórica (Diacrônica):</strong> Muda com o tempo.</li>
+                        <li style="margin-bottom: 5px;">👥 <strong>Social (Diastrática):</strong> Muda por grupo social.</li>
+                        <li>👔 <strong>Situacional (Diafásica):</strong> Muda pelo contexto.</li>
                     </ul>
                 </div>
             </div>
 
-            <div class="info-card">
-                <div class="info-title-row">
-                    <span class="info-disease">2. Funções (Qual a intenção?)</span>
-                </div>
-                <div class="info-content" style="font-size: 0.85em;">
+            <div class="info-card" style="border-left-color: var(--primary);">
+                <div class="info-title-row"><span class="info-disease">2. Funções da Linguagem</span></div>
+                <div class="info-content">
                     <ul style="padding-left: 15px; margin: 0; list-style: none;">
-                        <li style="margin-bottom: 6px;">📰 <strong>Referencial:</strong> Foco na INFORMAÇÃO real. (Ex: Notícia de jornal).</li>
-                        <li style="margin-bottom: 6px;">❤️ <strong>Emotiva:</strong> Foco no EU/Sentimentos. (Ex: "Estou tão triste!").</li>
-                        <li style="margin-bottom: 6px;">🫵 <strong>Conativa:</strong> Foco em VOCÊ/Convencer. (Ex: "Compre batom!", "Vacine-se!").</li>
-                        <li style="margin-bottom: 6px;">📞 <strong>Fática:</strong> Foco no CANAL/Testar som. (Ex: "Alô?", "Tá me ouvindo?").</li>
-                        <li style="margin-bottom: 6px;">📖 <strong>Metalinguística:</strong> O código explicando o código. (Ex: Dicionário definindo uma palavra).</li>
-                        <li>🎨 <strong>Poética:</strong> Foco na BELEZA da mensagem. (Ex: Poemas, rimas, músicas).</li>
+                        <li style="margin-bottom: 5px;">📰 <strong>Referencial:</strong> INFORMAÇÃO real (Jornal).</li>
+                        <li style="margin-bottom: 5px;">❤️ <strong>Emotiva:</strong> Sentimentos do EU ("Estou triste").</li>
+                        <li style="margin-bottom: 5px;">🫵 <strong>Conativa:</strong> Convencer VOCÊ ("Vacine-se!").</li>
+                        <li style="margin-bottom: 5px;">📞 <strong>Fática:</strong> Testar o CANAL ("Alô?").</li>
+                        <li style="margin-bottom: 5px;">📖 <strong>Metalinguística:</strong> Código explica CÓDIGO.</li>
+                        <li>🎨 <strong>Poética:</strong> BELEZA da mensagem (Poesia).</li>
                     </ul>
                 </div>
             </div>
 
-            <div class="info-card">
-                <div class="info-title-row">
-                    <span class="info-disease">3. Figuras (Efeitos de Sentido)</span>
-                </div>
-                <div class="info-content" style="font-size: 0.85em;">
+            <div class="info-card" style="border-left-color: var(--primary);">
+                <div class="info-title-row"><span class="info-disease">3. Figuras de Linguagem</span></div>
+                <div class="info-content">
                     <ul style="padding-left: 15px; margin: 0; list-style: none;">
-                        <li style="margin-bottom: 6px;"><strong>Metáfora:</strong> Comparação direta (sem usar "como").<br><span style="color:#555;">Ex: "Minha vida é um palco."</span></li>
-                        <li style="margin-bottom: 6px;"><strong>Comparação:</strong> Usa conectivos ("como", "tal qual").<br><span style="color:#555;">Ex: "Minha vida é <em>como</em> um palco."</span></li>
-                        <li style="margin-bottom: 6px;"><strong>Metonímia:</strong> Troca uma coisa pela outra relacionada.<br><span style="color:#555;">Ex: "Li Machado de Assis" (li o livro, não o homem).</span></li>
-                        <li style="margin-bottom: 6px;"><strong>Hipérbole:</strong> Exagero dramático.<br><span style="color:#555;">Ex: "Estou morrendo de fome."</span></li>
-                        <li style="margin-bottom: 6px;"><strong>Prosopopeia:</strong> Dar vida a coisas inanimadas.<br><span style="color:#555;">Ex: "O vento beijou meu rosto."</span></li>
-                        <li style="margin-bottom: 6px;"><strong>Antítese:</strong> Palavras opostas.<br><span style="color:#555;">Ex: "Guerra e Paz", "Amor e Ódio".</span></li>
-                        <li><strong>Paradoxo:</strong> Ideia impossível/contraditória.<br><span style="color:#555;">Ex: "Ferida que dói e não se sente."</span></li>
+                        <li style="margin-bottom: 5px;"><strong>Metáfora:</strong> Comparação direta (sem "como").</li>
+                        <li style="margin-bottom: 5px;"><strong>Comparação:</strong> Usa conectivos ("como").</li>
+                        <li style="margin-bottom: 5px;"><strong>Metonímia:</strong> Troca por proximidade (Autor/Obra).</li>
+                        <li style="margin-bottom: 5px;"><strong>Hipérbole:</strong> Exagero ("Morrer de rir").</li>
+                        <li style="margin-bottom: 5px;"><strong>Prosopopeia:</strong> Humanizar objetos.</li>
+                        <li style="margin-bottom: 5px;"><strong>Antítese:</strong> Palavras opostas (Vida/Morte).</li>
+                        <li><strong>Paradoxo:</strong> Ideia impossível/contraditória.</li>
                     </ul>
                 </div>
             </div>
@@ -390,23 +307,32 @@
     </div>
 
     <div id="questions-container"></div>
+    
     <button class="action-btn" onclick="calcularResultados()">Finalizar Simulado</button>
-    <button class="action-btn back-btn" onclick="voltarAoMenu()">Cancelar</button>
+    <button class="action-btn back-btn" onclick="voltarAoMenu()">Cancelar e Voltar</button>
 </div>
 
 <div class="container screen" id="result-screen">
+    <div class="header-nav">
+        <button class="back-arrow" onclick="voltarAoMenu()">&#8592;</button>
+        <h2 style="margin:0; font-size:1.2rem; color:var(--primary);">Resultado</h2>
+    </div>
+
     <div class="score-board">
-        <span style="font-size:0.9rem; color:#777;">Sua Nota Final</span>
-        <span class="score-number" id="final-score-display">0%</span>
-        <div id="final-score-text" style="margin-top:5px; font-size:0.9rem;"></div>
+        <span style="font-size:0.9rem; color:#777; display:block; margin-bottom:10px;">Sua Nota Final</span>
+        <span class="score-val" id="final-score-display">0%</span>
+        <div id="final-score-text" style="margin-top:10px; font-size:1rem; color:#555;"></div>
     </div>
     
     <div id="detailed-results"></div>
-    <button class="action-btn" onclick="voltarAoMenu()">Voltar ao Menu</button>
+    
+    <button class="action-btn" onclick="voltarAoMenu()">Voltar ao Menu Principal</button>
 </div>
 
 <script>
-    /* --- BANCO DE DADOS --- */
+    /* ==================================================================
+       BANCO DE DADOS (Conteúdo Compactado)
+       ================================================================== */
     // prettier-ignore
     const bancoDeQuestoes = {
         relacoes: [
@@ -441,7 +367,7 @@
             { id: 29, text: "A promoção da equidade em saúde envolve abordar barreiras. Qual situação exemplifica uma ação voltada para a equidade?", options: { a: "Oferecer o mesmo tratamento padronizado para todos os pacientes, independente de suas características", b: "Criar grupos de apoio específicos para populações vulneráveis e oferecer materiais educativos em diferentes idiomas e formatos acessíveis", c: "Priorizar apenas pacientes com maior poder aquisitivo", d: "Limitar o atendimento a grupos específicos para otimizar recursos" }, correct: "b" },
             { id: 30, text: "O respeito à autonomia do paciente é fundamental. Qual prática melhor exemplifica isso em um contexto de diversidade?", options: { a: "Tomar decisões em nome do paciente para agilizar o processo de tratamento", b: "Impor as recomendações médicas sem considerar as preferências culturais do paciente", c: "Garantir que o paciente esteja totalmente informado e envolvido nas decisões sobre seu tratamento, respeitando suas escolhas e valores culturais", d: "Delegar todas as decisões exclusivamente para a família, ignorando a vontade do paciente" }, correct: "c" }
         ],
-        
+
         coletiva: [
             { id: 1, tag: "BCG", text: "A vacina BCG é composta por bacilos vivos atenuados e protege contra formas graves da tuberculose. Sobre a técnica de administração e evolução da lesão vacinal, assinale a alternativa correta:", options: { a: "Deve ser administrada via subcutânea profunda, e a ausência de úlcera após 4 semanas indica erro técnico.", b: "A administração é intradérmica na inserção inferior do músculo deltoide direito; a evolução normal inclui mácula, pústula, úlcera e crosta, cicatrizando em até 12 semanas.", c: "A administração é intramuscular no vasto lateral da coxa, não devendo ser higienizada a pele previamente para não inativar o bacilo.", d: "Caso a úlcera demore mais de 12 semanas para cicatrizar, deve-se iniciar imediatamente o tratamento com esquema básico para tuberculose (Rifampicina + Isoniazida)." }, correct: "b" },
             { id: 2, tag: "BCG", text: "Um recém-nascido de 25 dias é levado à UBS para vacinação de rotina. A mãe relata que a criança nasceu prematura com 31 semanas e pesando 1.850g. No momento da consulta, o bebê pesa 1.950g e está clinicamente estável. Qual a conduta correta referente à BCG?", options: { a: "Administrar a vacina imediatamente, pois a prematuridade não é contraindicação.", b: "Adiar a vacinação até que a criança atinja o peso mínimo de 2.000g, conforme normas do PNI.", c: "Administrar metade da dose (0,05ml) devido ao baixo peso.", d: "Contraindicar a vacina definitivamente e prescrever Isoniazida profilática." }, correct: "b" },
@@ -591,19 +517,27 @@
             { id: 27, text: "Hospital substitui 'hipertermia' por 'febre alta' em folhetos. Isso se alinha com qual conceito?", options: { a: "Linguagem técnica", b: "Linguagem coloquial", c: "Linguagem simples (Plain Language), tornando textos mais fáceis de ler e entender", d: "Linguagem infantilizada" }, correct: "c" },
             { id: 28, text: "Paciente com braços cruzados, sem contato visual e sobrancelhas abaixadas. O que esses sinais podem indicar?", options: { a: "Surpresa e alegria", b: "Conforto e relaxamento", c: "Resistência, desconforto ou estado emotivo negativo como tensão", d: "Timidez natural" }, correct: "c" },
             { id: 29, text: "Hospital implementa intérpretes de Libras. Isso se relaciona com qual tipo de linguagem?", options: { a: "Linguagem mímica", b: "Linguagem inclusiva, tornando a comunicação acessível a todos", c: "Linguagem não verbal genérica", d: "Linguagem gestual informal" }, correct: "b" },
-            { id: 30, text: "Enfermeiro usa linguagem culta na palestra e gírias com colegas depois. Isso caracteriza quais modalidades?", options: { a: "Língua escrita literária e não-literária", b: "Língua culta/formal e língua coloquial/informal, demonstrando registros diferentes", c: "Língua vulgar e padrão", d: "Dialeto e linguagem técnica" }, correct: "b" }
+            { id: 30, text: "Enfermeiro usa linguagem culta na palestra e gírias com colegas depois. Isso caracteriza quais modalidades?", options: { a: "Língua escrita literária e não-literária", b: "Língua culta/formal e língua coloquial/informal, demonstrando registros diferentes", c: "Língua vulgar e padrão", d: "Dialeto e linguagem técnica" }, correct: "b" },
+            { id: 31, text: "Ao realizar a evolução de enfermagem no prontuário, o técnico deve utilizar a norma padrão da língua, evitando gírias e abreviações não padronizadas. Essa exigência refere-se a qual modalidade da língua?", options: { a: "Modalidade verbal oral, caracterizada pela espontaneidade", b: "Modalidade verbal escrita, que exige maior rigor gramatical, clareza e permanência documental", c: "Modalidade não verbal, focada na estética da caligrafia", d: "Modalidade mista, pois mistura números e letras" }, correct: "b" },
+            { id: 32, text: "Durante a passagem de plantão à beira-leito, a comunicação ocorre de forma direta entre os profissionais, permitindo perguntas imediatas e uso de entonação para enfatizar gravidade. Isso caracteriza qual modalidade?", options: { a: "Modalidade verbal escrita", b: "Modalidade verbal oral, marcada pela interação face a face e recursos paralinguísticos (tom de voz)", c: "Linguagem técnica estrita", d: "Nível coloquial vulgar" }, correct: "b" },
+            { id: 33, text: "Um cartaz na porta da UTI apresenta o símbolo de 'Risco Biológico' (três luas crescentes sobrepostas) acompanhado da frase 'Acesso Restrito'. A combinação de imagem e texto configura qual tipo de linguagem?", options: { a: "Linguagem verbal exclusiva", b: "Linguagem não verbal pura", c: "Linguagem mista ou híbrida, pois integra elementos verbais (texto) e não verbais (símbolo) para reforçar a mensagem", d: "Linguagem coloquial" }, correct: "c" },
+            { id: 34, text: "Um técnico explica ao médico: 'O paciente apresentou episódio emético e dispneia'. Ao paciente, ele diz: 'O senhor vomitou e está com falta de ar?'. Essa capacidade de alternar o vocabulário conforme o ouvinte demonstra o domínio de quais níveis de linguagem?", options: { a: "Nível culto/técnico (com o médico) e nível coloquial/popular (com o paciente), garantindo a adequação comunicativa", b: "Nível vulgar e nível regional", c: "Linguagem escrita e linguagem oral", d: "Variação histórica e geográfica" }, correct: "a" },
+            { id: 35, text: "Em um relatório oficial de ocorrência adversa, o profissional escreveu: 'A gente fomos fazer o curativo e o paciente tava reclamando de dor pra caramba'. O problema principal deste texto é a inadequação de nível. Qual seria o nível correto para este documento?", options: { a: "Nível coloquial, pois é mais sincero", b: "Nível culto ou padrão, que exige concordância correta ('Nós fomos') e vocabulário formal ('queixou-se de dor intensa')", c: "Nível literário, usando metáforas para a dor", d: "Nível regional, valorizando o sotaque local na escrita" }, correct: "b" },
+            { id: 36, text: "O uso de 'Jargão Profissional' (termos como 'deambular', 'prurido', 'edema') é essencial na comunicação entre a equipe de saúde. O jargão é classificado como:", options: { a: "Uma variação diatópica (regional)", b: "Um vício de linguagem que deve ser evitado sempre", c: "Uma linguagem técnica, pertencente a um grupo social específico (profissionais), visando precisão e rapidez", d: "Uma linguagem não verbal" }, correct: "c" }
         ],
 
         ambiental: [],
         organizacional: []
     };
 
-    /* --- LÓGICA DO APP --- */
+    /* ==================================================================
+       LÓGICA (JavaScript)
+       ================================================================== */
     let materiaAtual = '';
     let respostasUsuario = {};
 
+    // Ativa os botões se tiver conteúdo
     function verificarConteudo() {
-        // Verifica quais matérias têm questões e ativa os botões
         const materias = ['portugues', 'psicologia', 'ambiental', 'organizacional'];
         materias.forEach(m => {
             if (bancoDeQuestoes[m] && bancoDeQuestoes[m].length > 0) {
@@ -613,12 +547,14 @@
         });
     }
 
+    // Troca de Telas
     function mostrarTela(idTela) {
         document.querySelectorAll('.screen').forEach(tela => tela.classList.remove('active'));
         document.getElementById(idTela).classList.add('active');
         window.scrollTo(0,0);
     }
 
+    // Iniciar Quiz
     function iniciarQuiz(materia) {
         materiaAtual = materia;
         respostasUsuario = {};
@@ -632,9 +568,11 @@
             'ambiental': 'Saúde Ambiental',
             'organizacional': 'Processos Organizacionais'
         };
-        document.getElementById('quiz-title').innerText = titulos[materia];
+        
+        const tituloEl = document.getElementById('quiz-title');
+        if(tituloEl) tituloEl.innerText = titulos[materia];
 
-        // Exibir/Ocultar Resumo de Português
+        // Mostrar Resumo de Português
         const resumoPort = document.getElementById('resumo-portugues');
         if (resumoPort) {
             resumoPort.style.display = (materia === 'portugues') ? 'block' : 'none';
@@ -647,7 +585,7 @@
 
         if (!questoes || questoes.length === 0) {
             alert("Conteúdo em breve!");
-            return; // Não muda de tela se estiver vazio
+            return;
         }
 
         questoes.forEach((q, index) => {
@@ -669,6 +607,7 @@
         mostrarTela('quiz-screen');
     }
 
+    // Selecionar Opção
     function selecionarOpcao(indexQuestao, opcao, btnElement) {
         respostasUsuario[indexQuestao] = opcao;
         const parent = btnElement.parentElement;
@@ -676,6 +615,7 @@
         btnElement.classList.add('selected');
     }
 
+    // Calcular Resultados
     function calcularResultados() {
         const questoes = bancoDeQuestoes[materiaAtual];
         const total = questoes.length;
